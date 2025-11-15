@@ -75,7 +75,8 @@ def create_client(client_stub):
 def close_client_stub(client_stub):
     client_stub.close()
 
-
+#### Esto fue hecho con chat para verificar que las difernetes base de datos en realidad 
+#### estuvieran conectadaso bueno que se conecten  
 if __name__ == "__main__":
     # Cassandra
     try:
@@ -95,7 +96,15 @@ if __name__ == "__main__":
     try:
         stub = create_client_stub()
         client = create_client(stub)
+
+        # 🔸 Esta línea SÍ hace una llamada real al servidor
+        client.check_version()
+
         print("✅ Dgraph conectado")
-        close_client_stub(stub)
     except Exception as e:
         print("❌ Error en Dgraph:", e)
+    finally:
+        try:
+            close_client_stub(stub)
+        except:
+            pass
