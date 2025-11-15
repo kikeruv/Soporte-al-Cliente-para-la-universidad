@@ -5,8 +5,6 @@
 - Victoria Leticia Figueroa Rivera – *751169*  
 - Renata Itzel Caballero Velázquez – *741036*  
 
----
-
 ## Descripción del proyecto
 
 Este proyecto consiste en un **sistema de soporte al cliente** donde los usuarios pueden levantar tickets relacionados con:
