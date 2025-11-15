@@ -1,58 +1,59 @@
-# Imports para Cassandra
-import logging
-import os 
-from cassandra.cluster import Cluster
-import model
-# Imports para Mongo
-import falcon.asgi
-from pymongo import MongoClient
-import logging
-from resources import BookResource, BooksResource
+# main.py
 
-# Imports para DGraph
+def print_menu():
+    #  CASSANDRA 
+    print("1. [Cassandra] Ver tickets por cliente")
+    print("2. [Cassandra] Ver tickets por fecha")
+    print("3. [Cassandra] Ver historial de soporte de un cliente")
 
-##################################################
-# Config de Cassandra 
-# Set logger
-log = logging.getLogger()
-log.setLevel('INFO')
-handler = logging.FileHandler('logistics.log')
-handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
-log.addHandler(handler)
+    #  MONGODB 
+    print("4. [MongoDB] Listar clientes registrados")
+    print("5. [MongoDB] Listar tickets abiertos")
+    print("6. [MongoDB] Buscar ticket por ID")
 
-# Read env vars related to Cassandra App
-CLUSTER_IPS = os.getenv('CASSANDRA_CLUSTER_IPS', '127.0.0.1')
-KEYSPACE = os.getenv('CASSANDRA_KEYSPACE', 'logistics')
-REPLICATION_FACTOR = os.getenv('CASSANDRA_REPLICATION_FACTOR', '1')
-##################################################
+    #  DGRAPH 
+    print("7. [Dgraph] Ver grafo de clientes y tickets")
+    print("8. [Dgraph] Ver relaciones de un cliente")
+    print("9. [Dgraph] Ver tickets asignados a un agente")
 
-##################################################
-# Config de Mongo
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+    print("\n0. Salir\n")
 
-class LoggingMiddleware:
-    async def process_request(self, req, resp):
-        logger.info(f"Request: {req.method} {req.uri}")
+def main():
+    print_menu()
 
-    async def process_response(self, req, resp, resource, req_succeeded):
-        logger.info(f"Response: {resp.status} for {req.method} {req.uri}")
+    try:
+        opcion = int(input("Seleccione una opción: "))
+    except ValueError:
+        print("Opción inválida. Debe ser un número.")
+        return
 
-# Initialize MongoDB client and database
-client = MongoClient('mongodb://localhost:27017/')
-db = client.app
-# Create the Falcon application
-app = falcon.asgi.App(middleware=[LoggingMiddleware()])
+    # Respondemos según lo que elija el usuario (pero sin lógica real)
+    if opcion == 1:
+        print("\nVerás los tickets por cliente (Cassandra).")
+    elif opcion == 2:
+        print("\ncVerás los tickets por fecha (Cassandra).")
+    elif opcion == 3:
+        print("\nVerás el historial de soporte (Cassandra).")
 
-# Instantiate the resources
-book_resource = BookResource(db)
-books_resource = BooksResource(db)
+    elif opcion == 4:
+        print("\nListar clientes registrados (MongoDB).")
+    elif opcion == 5:
+        print("\nListar tickets abiertos (MongoDB).")
+    elif opcion == 6:
+        print("\nBuscar ticket por ID (MongoDB).")
 
-# Add routes to serve the resources
-app.add_route('/books', books_resource)
-app.add_route('/books/{book_id}', book_resource)
-################################################
+    elif opcion == 7:
+        print("\nVer grafo de clientes y tickets (Dgraph).")
+    elif opcion == 8:
+        print("\nVer relaciones de un cliente (Dgraph).")
+    elif opcion == 9:
+        print("\nVer tickets asignados a un agente (Dgraph).")
 
-################################################
-# Config de DGraph
+    elif opcion == 0:
+        print("\nSaliendo del sistema...")
+    else:
+        print("\nOpción no válida.")
 
+
+if __name__ == "__main__":
+    main()
