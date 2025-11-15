@@ -22,6 +22,7 @@ python3 -m venv ./venv
 .\venv\Scripts\Activate
 
 Ejecuta los siguientes comandos en la raíz del proyecto:
+
 pip install cassandra-driver pymongo falcon pydgraph
 
 
