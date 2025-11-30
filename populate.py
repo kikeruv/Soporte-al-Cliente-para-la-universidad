@@ -10,7 +10,6 @@ CSV_PATH = "data/data.csv"
 def ensure_indexes():
     # users: email único
     db.users.create_index("email", unique=True)
-
     # tickets: installation_id + created_at
     db.tickets.create_index("installation_id")
     db.tickets.create_index([("created_at", -1)])
@@ -25,7 +24,7 @@ def insert_user(row):
         "user_id": row["user_id"],
         "expediente": row["expediente"],
         "email": row["email"],
-        "password_hash": row["password_hash"],
+        "password": row["password"],
         "role": row["role"],
         "createdAt": datetime.utcnow(),
     }
@@ -43,7 +42,7 @@ def insert_user(row):
             print(f"Usuario ya existía: {user_doc['email']}")
 
     except DuplicateKeyError:
-        print(f"⚠ Email duplicado, ignorado: {user_doc['email']}")
+        print(f"Email duplicado, ignorado: {user_doc['email']}")
 
 
 
@@ -61,7 +60,10 @@ def insert_ticket(row):
         "priority": row["priority"],
         "user_id": row["user_id"],
         "installation_id": row["installation_id"],
-        "created_at": datetime.utcnow()
+        "place_name": row.get("place_name"),
+        "object_name": row.get("object_name"), 
+        "lost_status": row.get("lost_status"),
+        "created_at": datetime.utcnow(),
     }
 
     tickets.insert_one(ticket_doc)
