@@ -15,6 +15,7 @@ from Mongo.client import (
     buscar_por_texto,
     resumen_objetos_perdidos,
     tickets_cerrados_por_categoria,
+    mostrar_usuarios,
 )
 
 import populate
@@ -68,15 +69,16 @@ def print_menu():
     print("9. Búsqueda por texto en tickets")
     print("10. Resumen de objetos perdidos")
     print("11. Tickets cerrados por categoría")
+    print("12. Mostar todos los usuarios")
 
     #  DGRAPH 
-    print("12. Ver grafo de clientes y tickets")
-    print("13. Ver relaciones de un cliente")
-    print("14. Ver tickets asignados a un agente")
+    print("13. Ver grafo de clientes y tickets")
+    print("14. Ver relaciones de un cliente")
+    print("15. Ver tickets asignados a un agente")
 
     # Utilidades
-    print("15. Probar conexiones a Cassandra, Mongo y Dgraph")
-    print("16. Ejecutar populate de datos desde CSV")
+    print("16. Probar conexiones a Cassandra, Mongo y Dgraph")
+    print("17. Ejecutar populate de datos desde CSV")
 
     print("\n0. Salir\n")
 
@@ -125,20 +127,23 @@ def main():
         elif opcion == 11:
             tickets_cerrados_por_categoria()
 
-        # DGRAPH
         elif opcion == 12:
+            mostrar_usuarios()
+
+        # DGRAPH
+        elif opcion == 13:
             print("\nVer grafo de clientes y tickets (Dgraph).\n")
 
-        elif opcion == 13:
+        elif opcion == 14:
             print("\nVer relaciones de un cliente (Dgraph).\n")
 
-        elif opcion == 14:
+        elif opcion == 15:
             print("\nVer tickets asignados a un agente (Dgraph).\n")
 
-        elif opcion == 15:
+        elif opcion == 16:
             test_connections()
 
-        elif opcion == 16:
+        elif opcion == 17:
             print("\nEjecutando populate de Mongo desde CSV...\n")
             populate.main()
             print()

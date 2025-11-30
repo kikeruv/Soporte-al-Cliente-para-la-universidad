@@ -274,3 +274,23 @@ def tickets_cerrados_por_categoria():
     print("\n7Tickets cerrados por categoría")
     for doc in resultados:
         print(f"- {doc['category']}: {doc['total_closed']}")
+
+def mostrar_usuarios():
+    usuarios = list(db.users.find(
+        {},
+        {
+            "_id": 0, 
+            "user_id": 1, 
+            "expediente": 1, 
+            "email": 1, "role": 1
+         }
+    ))
+
+    if not usuarios:
+        print("\nNo hay usuarios registrados.\n")
+        return
+
+    print("\n=== Lista de usuarios ===")
+    for u in usuarios:
+        print(f"{u['user_id']} | {u['expediente']} | {u['email']} | {u['role']}")
+    print("==========================\n")
