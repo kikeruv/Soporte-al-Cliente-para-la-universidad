@@ -1,6 +1,8 @@
 import csv
 from datetime import datetime, timedelta
 from pymongo.errors import DuplicateKeyError
+import json
+import pydgraph
 
 from connect import (
     db,
@@ -357,18 +359,170 @@ def populate_cassandra():
 
 def populate_dgraph():
     """
-    DESACTIVADO por ahora.
-    Mas adelante aqui podemos leer de Mongo (db.tickets)
-    y crear nodos/aristas en Dgraph.
+    Llena Dgraph usando los tickets que ya estan en Mongo
+    Crea nodos usuario, instalacion y ticket y relaciones creo y afecta.
     """
-    print("Populate Dgraph desactivado (aun no implementado).")
+   
+    print("=== Populate Dgraph ===")
+
+    # Crear cliente de Dgraph
+    stub = create_client_stub()
+    client = create_client(stub)
+
+    # 1) Definimos esquema simple
+    schema = """
+    user_id: string @index(exact) .
+    email: string @index(exact) .
+    rol: string @index(exact) .
+
+    ticket_id: string @index(exact) .
+    titulo: string @index(term) .
+    descripcion: string @index(fulltext) .
+    estado: string @index(exact) .
+    prioridad: string @index(exact) .
+    fecha_creacion: datetime .
+
+    instal_id: string @index(exact) .
+    instal_nombre: string .
+
+    creado_por: uid @reverse .
+    afecta: uid @reverse .
+
+    type Usuario {
+      user_id
+      email
+      rol
+    }
+
+    type Ticket {
+      ticket_id
+      titulo
+      descripcion
+      estado
+      prioridad
+      fecha_creacion
+      creado_por
+      afecta
+    }
+
+    type Instalacion {
+      instal_id
+      instal_nombre
+    }
+    """
+
+    op = pydgraph.Operation(schema=schema)
+    client.alter(op)
+
+    # 2) Leer datos de Mongo
+    usuarios = list(db.users.find())
+    tickets = list(db.tickets.find())
+
+    objetos = []
+
+    # 3) Crear nodos de Usuario
+    for u in usuarios:
+        user_id = u.get("user_id")
+        if not user_id:
+            continue
+
+        obj = {
+            "uid": f"_:u_{user_id}",
+            "dgraph.type": "Usuario",
+            "user_id": user_id,
+        }
+
+        email = u.get("email")
+        if email:
+            obj["email"] = email
+
+        rol = u.get("role")
+        if rol:
+            obj["rol"] = rol
+
+        objetos.append(obj)
+
+    # 4) Crear nodos de Instalacion (a partir de tickets)
+    instalaciones_vistas = set()
+
+    for t in tickets:
+        instal_id = t.get("installation_id")
+        if not instal_id:
+            continue
+        if instal_id in instalaciones_vistas:
+            continue
+
+        instalaciones_vistas.add(instal_id)
+
+        obj = {
+            "uid": f"_:i_{instal_id}",
+            "dgraph.type": "Instalacion",
+            "instal_id": instal_id,
+            "instal_nombre": instal_id,
+        }
+        objetos.append(obj)
+
+    # 5) Crear nodos de Ticket y relaciones
+    ahora = datetime.utcnow()
+
+    for t in tickets:
+        ticket_id = t.get("ticket_id")
+        if not ticket_id:
+            continue
+
+        creado = t.get("created_at") or ahora
+        if isinstance(creado, datetime):
+            fecha_str = creado.isoformat()
+        else:
+            fecha_str = str(creado)
+
+        ticket_obj = {
+            "uid": f"_:t_{ticket_id}",
+            "dgraph.type": "Ticket",
+            "ticket_id": ticket_id,
+            "titulo": t.get("title", ""),
+            "descripcion": t.get("description", ""),
+            "estado": t.get("status", ""),
+            "prioridad": t.get("priority", ""),
+            "fecha_creacion": fecha_str,
+        }
+
+        user_id = t.get("user_id")
+        if user_id:
+            ticket_obj["creado_por"] = {"uid": f"_:u_{user_id}"}
+
+        instal_id = t.get("installation_id")
+        if instal_id:
+            ticket_obj["afecta"] = {"uid": f"_:i_{instal_id}"}
+
+        objetos.append(ticket_obj)
+
+        # 6) Enviar todo a Dgraph en una sola mutacion JSON
+    if objetos:
+        txn = client.txn()
+        try:
+            data = json.dumps(objetos).encode("utf-8")
+            mutation = pydgraph.Mutation()
+            mutation.set_json = data
+            txn.mutate(mutation)
+            txn.commit()
+            print(f"Populate Dgraph: {len(objetos)} objetos insertados.")
+        finally:
+            txn.discard()
+    else:
+        print("Populate Dgraph: no hay datos para insertar en Dgraph.")
+
+    close_client_stub(stub)
+    print("Populate Dgraph: completado.")
+
+    
 
 
 def main():
-    print("=== Populate: Mongo + Cassandra (Dgraph desactivado) ===")
+    print("=== Populate: Mongo + Cassandra + Dgraph ===")
     populate_mongo()
     populate_cassandra()
-    # populate_dgraph()  # Lo activaremos cuando terminemos la parte de Dgraph
+    populate_dgraph() 
     print("=== Populate completado ===")
 
 

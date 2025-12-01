@@ -20,6 +20,7 @@ from Mongo.client import (
 from Cassandra import model as cass_model
 
 import populate
+import json
 
 
 # Helper para asegurar que el esquema de Cassandra se cree solo una vez
@@ -80,6 +81,136 @@ def test_connections():
                 close_client_stub(stub)
             except Exception:
                 pass
+
+
+##### Consultas a Dgraph #####
+
+
+def dgraph_usuarios_y_tickets():
+    """
+    Muestra los usuarios en Dgraph y cuantos tickets tiene cada uno.
+    """
+    print("\n=== Dgraph: Usuarios y sus tickets ===")
+
+    stub = None
+    try:
+        stub = create_client_stub()
+        client = create_client(stub)
+
+        query = """
+        {
+          usuarios(func: type(Usuario)) {
+            user_id
+            email
+            rol
+            total_tickets: count(~creado_por)
+          }
+        }
+        """
+
+        txn = client.txn(read_only=True)
+        res = txn.query(query)
+        data = json.loads(res.json)
+
+        usuarios = data.get("usuarios", [])
+        if not usuarios:
+            print("No se encontraron usuarios en Dgraph.")
+            return
+
+        for u in usuarios:
+            print("- user_id:", u.get("user_id"))
+            print("  email:", u.get("email"))
+            print("  rol:", u.get("rol"))
+            print("  total_tickets:", u.get("total_tickets", 0))
+            print()
+
+    except Exception as e:
+        print("Error al consultar Dgraph:", e)
+    finally:
+        if stub is not None:
+            try:
+                close_client_stub(stub)
+            except Exception:
+                pass
+
+
+def dgraph_instalaciones_y_tickets():
+    """
+    Muestra las instalaciones en Dgraph y los tickets asociados.
+    """
+    print("\n=== Dgraph: Instalaciones y sus tickets ===")
+
+    stub = None
+    try:
+        stub = create_client_stub()
+        client = create_client(stub)
+
+        query = """
+        {
+          instalaciones(func: type(Instalacion)) {
+            instal_id
+            instal_nombre
+            tickets: ~afecta {
+              ticket_id
+              titulo
+              estado
+            }
+          }
+        }
+        """
+
+        txn = client.txn(read_only=True)
+        res = txn.query(query)
+        data = json.loads(res.json)
+
+        instalaciones = data.get("instalaciones", [])
+        if not instalaciones:
+            print("No se encontraron instalaciones en Dgraph.")
+            return
+
+        for inst in instalaciones:
+            print("- instal_id:", inst.get("instal_id"))
+            print("  nombre:", inst.get("instal_nombre"))
+            tickets = inst.get("tickets", [])
+            print("  total_tickets:", len(tickets))
+            for t in tickets:
+                print("    *", t.get("ticket_id"), "-", t.get("titulo"), f"({t.get('estado')})")
+            print()
+
+    except Exception as e:
+        print("Error al consultar Dgraph:", e)
+    finally:
+        if stub is not None:
+            try:
+                close_client_stub(stub)
+            except Exception:
+                pass
+
+
+def menu_dgraph():
+    """
+    Submenu para consultas en Dgraph.
+    """
+    while True:
+        print("\n=== Reportes en Dgraph (grafo) ===")
+        print("1. Usuarios y cantidad de tickets")
+        print("2. Instalaciones y sus tickets")
+        print("0. Volver al menu principal")
+
+        try:
+            op = int(input("Opcion: ").strip())
+        except ValueError:
+            print("Opcion invalida.")
+            continue
+
+        if op == 0:
+            break
+        elif op == 1:
+            dgraph_usuarios_y_tickets()
+        elif op == 2:
+            dgraph_instalaciones_y_tickets()
+        else:
+            print("Opcion no valida.")
 
 
 def borrar_datos():
@@ -359,6 +490,7 @@ def print_menu_principal():
     print("6. Probar conexiones M + C + D")
     print("7. Ejecutar populate M + C")
     print("8. Borrar TODOS los datos M + C")
+    print("9. Reportes en Dgraph (grafo) D")
     print("0. Salir")
 
 
@@ -392,11 +524,13 @@ def main():
         elif opcion == 6:
             test_connections()
         elif opcion == 7:
-            print("\nEjecutando populate de M + C\n")
+            print("\nEjecutando populate de M + C + D\n")
             populate.main()
             print()
         elif opcion == 8:
             borrar_datos()
+        elif opcion == 9:
+            menu_dgraph()
 
         else:
             print("\nOpcion no valida.\n")
