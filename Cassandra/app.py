@@ -72,57 +72,57 @@ def main():
 
         elif opcion == 1:
             dias = int(input("Dias inactivos mayores a: ").strip() or "5")
-            model.q1_alertas_tickets_vencidos(session, dias)
+            model.alertas_tickets_vencidos(session, dias)
 
         elif opcion == 2:
             user_id = input("user_id (ej. u-001): ").strip()
-            model.q2_historial_por_usuario(session, user_id)
+            model.historial_por_usuario(session, user_id)
 
         elif opcion == 3:
             fecha = input("Fecha (YYYY-MM-DD): ").strip()
-            model.q3_tickets_por_categoria_dia(session, fecha)
+            model.tickets_por_categoria_dia(session, fecha)
 
         elif opcion == 4:
             profesor_id = input("profesor_id (user_id del docente): ").strip()
-            model.q4_tickets_por_profesor(session, profesor_id)
+            model.tickets_por_profesor(session, profesor_id)
 
         elif opcion == 5:
             ticket_id = input("ticket_id (ej. TK-2001): ").strip()
-            model.q5_historial_ticket(session, ticket_id)
+            model.historial_ticket(session, ticket_id)
 
         elif opcion == 6:
             install_id = input("install_id (ej. DESI): ").strip()
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
-            model.q6_tickets_por_instalacion_rango(session, install_id, f1, f2)
+            model.tickets_por_instalacion_rango(session, install_id, f1, f2)
 
         elif opcion == 7:
             estado = input("Estado (abierto, en_proceso, cerrado): ").strip()
-            model.q7_tickets_por_estado(session, estado)
+            model.tickets_por_estado(session, estado)
 
         elif opcion == 8:
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
-            model.q8_tickets_por_fecha_rango(session, f1, f2)
+            model.tickets_por_fecha_rango(session, f1, f2)
 
         elif opcion == 9:
             user_id = input("user_id: ").strip()
             fecha = input("Fecha (YYYY-MM-DD): ").strip()
-            model.q9_tickets_por_usuario_dia(session, user_id, fecha)
+            model.tickets_por_usuario_dia(session, user_id, fecha)
 
         elif opcion == 10:
             rol = input("Rol (docente/estudiante): ").strip()
-            model.q10_tickets_por_rol(session, rol)
+            model.tickets_por_rol(session, rol)
 
         elif opcion == 11:
-            model.q11_conteo_por_prioridad(session)
+            model.conteo_por_prioridad(session)
 
         elif opcion == 12:
             depto = input("Departamento (ej. DESI): ").strip()
-            model.q12_tickets_por_departamento(session, depto)
+            model.tickets_por_departamento(session, depto)
 
         elif opcion == 13:
-            model.q13_tickets_por_turno(session)
+            model.tickets_por_turno(session)
 
         else:
             print("Opcion no valida.")

@@ -25,10 +25,23 @@ CLUSTER_IPS = os.getenv('CASSANDRA_CLUSTER_IPS', '127.0.0.1')
 KEYSPACE = os.getenv('CASSANDRA_KEYSPACE', 'proyecto')
 REPLICATION_FACTOR = os.getenv('CASSANDRA_REPLICATION_FACTOR', '1')
 
+#Conexiones cacheadas 
+_cluster = None
+_session = None
+
 def get_cassandra_session():
+    """
+    Devuelve una sesion de Cassandra reutilizable.
+    Solo crea el Cluster/conexion y keyspace la primera vez.
+    """
+    global _cluster, _session
+
+    if _session is not None:
+        return _session
+
     log.info(f"Conectando a Cassandra en {CLUSTER_IPS}...")
-    cluster = Cluster(CLUSTER_IPS.split(','))
-    session = cluster.connect()
+    _cluster = Cluster(CLUSTER_IPS.split(','))
+    session = _cluster.connect()
 
     # Crear keyspace si no existe (mismo estilo que en laboratorios)
     session.execute(f"""
@@ -39,7 +52,9 @@ def get_cassandra_session():
 
     session.set_keyspace(KEYSPACE)
     log.info(f"Conectado a Cassandra. KEYSPACE en uso: {KEYSPACE}")
-    return session
+
+    _session = session
+    return _session
 ##################################################
 
 ##################################################

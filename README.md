@@ -20,6 +20,7 @@ El objetivo del avance actual es **conectar tres bases de datos distintas** (Cas
 ### Crear ambiente virtual
 python3 -m venv ./venv
 .\venv\Scripts\Activate
+python main.py
 
 Ejecuta los siguientes comandos en la raíz del proyecto:
 

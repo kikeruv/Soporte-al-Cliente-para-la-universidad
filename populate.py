@@ -115,15 +115,15 @@ def populate_cassandra():
     tablas = [
         "alertas_tickets_vencidos",
         "historial_por_usuario",
-        "tickets_por_categoria_dia",
+        "conteo_tickets_por_categoria_dia",
         "tickets_por_profesor",
         "historial_ticket",
         "tickets_por_instalacion",
         "tickets_por_estado",
-        "tickets",
+        "filtrado_tickets_por_fecha",
         "tickets_por_usuario_dia",
         "tickets_por_rol",
-        "tickets_por_prioridad",
+        "conteo_tickets_por_prioridad",
         "tickets_por_departamento",
         "tickets_por_turno",
     ]
@@ -175,7 +175,7 @@ def populate_cassandra():
     )
     insert_tickets = session.prepare(
         """
-        INSERT INTO tickets
+        INSERT INTO filtrado_tickets_por_fecha
         (fecha, ticket_id, user_id, categoria, estado, prioridad)
         VALUES (?, ?, ?, ?, ?, ?)
         """
@@ -205,14 +205,14 @@ def populate_cassandra():
     # Sentencias para counters
     update_cat_dia = session.prepare(
         """
-        UPDATE tickets_por_categoria_dia
+        UPDATE conteo_tickets_por_categoria_dia
         SET total = total + 1
         WHERE fecha = ? AND categoria = ?
         """
     )
     update_prioridad = session.prepare(
         """
-        UPDATE tickets_por_prioridad
+        UPDATE conteo_tickets_por_prioridad
         SET total = total + 1
         WHERE prioridad = ?
         """

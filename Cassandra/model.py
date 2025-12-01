@@ -38,8 +38,8 @@ CREATE_HISTORIAL_POR_USUARIO_TABLE = """
 
 
 # 3. Conteo de tickets por categoria y dia
-CREATE_TICKETS_POR_CATEGORIA_DIA_TABLE = """
-    CREATE TABLE IF NOT EXISTS tickets_por_categoria_dia (
+CREATE_CONTEO_TICKETS_POR_CATEGORIA_DIA_TABLE = """
+    CREATE TABLE IF NOT EXISTS conteo_tickets_por_categoria_dia (
         fecha date,
         categoria text,
         total counter,
@@ -104,8 +104,8 @@ CREATE_TICKETS_POR_ESTADO_TABLE = """
 
 
 # 8. Filtrado de tickets por fecha
-CREATE_TICKETS_TABLE = """
-    CREATE TABLE IF NOT EXISTS tickets (
+CREATE_FILTRADO_TICKETS_POR_FECHA_TABLE = """
+    CREATE TABLE IF NOT EXISTS filtrado_tickets_por_fecha (
         fecha timestamp,
         ticket_id text,
         user_id text,
@@ -146,8 +146,8 @@ CREATE_TICKETS_POR_ROL_TABLE = """
 
 
 # 11. Conteo de tickets por prioridad
-CREATE_TICKETS_POR_PRIORIDAD_TABLE = """
-    CREATE TABLE IF NOT EXISTS tickets_por_prioridad (
+CREATE_CONTEO_TICKETS_POR_PRIORIDAD_TABLE = """
+    CREATE TABLE IF NOT EXISTS conteo_tickets_por_prioridad (
         prioridad text,
         total counter,
         PRIMARY KEY (prioridad)
@@ -192,15 +192,15 @@ def create_schema(session):
 
     session.execute(CREATE_ALERTAS_TICKETS_VENCIDOS_TABLE)
     session.execute(CREATE_HISTORIAL_POR_USUARIO_TABLE)
-    session.execute(CREATE_TICKETS_POR_CATEGORIA_DIA_TABLE)
+    session.execute(CREATE_CONTEO_TICKETS_POR_CATEGORIA_DIA_TABLE)
     session.execute(CREATE_TICKETS_POR_PROFESOR_TABLE)
     session.execute(CREATE_HISTORIAL_TICKET_TABLE)
     session.execute(CREATE_TICKETS_POR_INSTALACION_TABLE)
     session.execute(CREATE_TICKETS_POR_ESTADO_TABLE)
-    session.execute(CREATE_TICKETS_TABLE)
+    session.execute(CREATE_FILTRADO_TICKETS_POR_FECHA_TABLE)
     session.execute(CREATE_TICKETS_POR_USUARIO_DIA_TABLE)
     session.execute(CREATE_TICKETS_POR_ROL_TABLE)
-    session.execute(CREATE_TICKETS_POR_PRIORIDAD_TABLE)
+    session.execute(CREATE_CONTEO_TICKETS_POR_PRIORIDAD_TABLE)
     session.execute(CREATE_TICKETS_POR_DEPARTAMENTO_TABLE)
     session.execute(CREATE_TICKETS_POR_TURNO_TABLE)
 
@@ -222,7 +222,7 @@ def _parse_timestamp(ts_str: str) -> datetime:
     return datetime.fromisoformat(ts_str)
 
 
-def q1_alertas_tickets_vencidos(session, dias_minimos: int = 5):
+def alertas_tickets_vencidos(session, dias_minimos: int = 5):
     """
     1) Alerta de tickets vencidos:
        SELECT ticket_id, dias_inactivos
@@ -247,7 +247,7 @@ def q1_alertas_tickets_vencidos(session, dias_minimos: int = 5):
         )
 
 
-def q2_historial_por_usuario(session, user_id: str):
+def historial_por_usuario(session, user_id: str):
     """
     2) Historial por usuario:
        SELECT user_id, fecha, ticket_id, categoria, estado
@@ -271,19 +271,19 @@ def q2_historial_por_usuario(session, user_id: str):
         )
 
 
-def q3_tickets_por_categoria_dia(session, fecha_str: str):
+def tickets_por_categoria_dia(session, fecha_str: str):
     """
     3) Conteo de tickets por categoria y dia:
        SELECT fecha, categoria, total
        FROM tickets_por_categoria_dia
        WHERE fecha = '2025-10-01';
     """
-    log.info("Q3 - tickets_por_categoria_dia")
+    log.info("Q3 - conteo_tickets_por_categoria_dia")
     fecha = _parse_date(fecha_str)
     stmt = session.prepare(
         """
         SELECT fecha, categoria, total
-        FROM tickets_por_categoria_dia
+        FROM conteo_tickets_por_categoria_dia
         WHERE fecha = ?
         """
     )
@@ -293,7 +293,7 @@ def q3_tickets_por_categoria_dia(session, fecha_str: str):
         print(f"- Categoria {r.categoria}: total={r.total}")
 
 
-def q4_tickets_por_profesor(session, profesor_id: str):
+def tickets_por_profesor(session, profesor_id: str):
     """
     4) Tickets por profesor:
        SELECT profesor_id, ticket_id, categoria, estado, fecha_creacion
@@ -317,7 +317,7 @@ def q4_tickets_por_profesor(session, profesor_id: str):
         )
 
 
-def q5_historial_ticket(session, ticket_id: str):
+def historial_ticket(session, ticket_id: str):
     """
     5) Historial de un ticket:
        SELECT ticket_id, evento, fecha
@@ -342,7 +342,7 @@ def q5_historial_ticket(session, ticket_id: str):
         )
 
 
-def q6_tickets_por_instalacion_rango(
+def tickets_por_instalacion_rango(
     session, install_id: str, fecha_inicio: str, fecha_fin: str
 ):
     """
@@ -377,7 +377,7 @@ def q6_tickets_por_instalacion_rango(
         )
 
 
-def q7_tickets_por_estado(session, estado: str):
+def tickets_por_estado(session, estado: str):
     """
     7) Tickets por estado:
        SELECT * 
@@ -401,13 +401,13 @@ def q7_tickets_por_estado(session, estado: str):
         )
 
 
-def q8_tickets_por_fecha_rango(
+def tickets_por_fecha_rango(
     session, fecha_inicio: str, fecha_fin: str
 ):
     """
     8) Filtrado de tickets por fecha:
        SELECT *
-       FROM tickets
+       FROM filtrado_tickets_por_fecha
        WHERE fecha >= '2025-10-01'
          AND fecha <= '2025-10-15';
     """
@@ -418,7 +418,7 @@ def q8_tickets_por_fecha_rango(
     stmt = session.prepare(
         """
         SELECT fecha, ticket_id, user_id, categoria, estado, prioridad
-        FROM tickets
+        FROM filtrado_tickets_por_fecha
         WHERE fecha >= ?
           AND fecha <= ?
         ALLOW FILTERING
@@ -433,7 +433,7 @@ def q8_tickets_por_fecha_rango(
         )
 
 
-def q9_tickets_por_usuario_dia(
+def tickets_por_usuario_dia(
     session, user_id: str, fecha_str: str
 ):
     """
@@ -461,7 +461,7 @@ def q9_tickets_por_usuario_dia(
         )
 
 
-def q10_tickets_por_rol(session, rol: str):
+def tickets_por_rol(session, rol: str):
     """
     10) Tickets por rol de usuario:
         SELECT rol, fecha_creacion, ticket_id, user_id, categoria, estado
@@ -485,17 +485,17 @@ def q10_tickets_por_rol(session, rol: str):
         )
 
 
-def q11_conteo_por_prioridad(session):
+def conteo_por_prioridad(session):
     """
     11) Conteo de tickets por prioridad:
         SELECT prioridad, total
-        FROM tickets_por_prioridad;
+        FROM conteo_tickets_por_prioridad;
     """
-    log.info("Q11 - tickets_por_prioridad")
+    log.info("Q11 - conteo_tickets_por_prioridad")
     rows = session.execute(
         """
         SELECT prioridad, total
-        FROM tickets_por_prioridad
+        FROM conteo_tickets_por_prioridad
         """
     )
     print("\n=== Conteo de tickets por prioridad ===")
@@ -503,7 +503,7 @@ def q11_conteo_por_prioridad(session):
         print(f"- {r.prioridad}: {r.total}")
 
 
-def q12_tickets_por_departamento(session, departamento: str):
+def tickets_por_departamento(session, departamento: str):
     """
     12) Tickets por departamento:
         SELECT departamento, ticket_id, estado
@@ -527,7 +527,7 @@ def q12_tickets_por_departamento(session, departamento: str):
         )
 
 
-def q13_tickets_por_turno(session):
+def tickets_por_turno(session):
     """
     13) Tickets por turno:
         SELECT turno, total_tickets

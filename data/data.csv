@@ -19,26 +19,26 @@ U017,710004,alumno11@iteso.mx,hash016,estudiante,TK-2017,Error en portal,Solicit
 U018,655432,alumno12@iteso.mx,hash017,estudiante,TK-2018,Objeto perdido,Audífonos olvidados en gimnasio,cosas_perdidas,abierto,baja,GYM1
 U019,800341,alumno13@iteso.mx,hash018,estudiante,TK-2019,Problema con silla,Silla rota en el salón B-204,instalaciones,abierto,baja,B204
 U020,720099,docente6@iteso.mx,hash019,docente,TK-2020,Falla en micrófono,Micrófono del auditorio no funciona,instalaciones,en_proceso,alta,AUD1
-U021,751601,ana.garcia@uni.mx,hash_ana,estudiante,TK-2101,Falla en proyector,"El proyector no enciende en el aula 101",instalaciones,abierto,alta,ENT1,Aula 101
-U022,751602,luis.perez@uni.mx,hash_luis,docente,TK-2102,Daño en computadora,"La PC de la oficina 203 no prende",instalaciones,en_proceso,alta,OFI2,Oficina 203
-U023,751603,mariana.lopez@uni.mx,hash_mariana,estudiante,TK-2103,Problema con aire acondicionado,"El aire acondicionado tira agua",instalaciones,abierto,media,LAB1,Laboratorio 1
-U024,751604,carlos.ramirez@uni.mx,hash_carlos,docente,TK-2104,Reporte de acceso a plataforma,"No puedo entrar al LMS",docentes,abierto,media,DESK1,Soporte Planta Baja
-U025,751605,paula.santos@uni.mx,hash_paula,estudiante,TK-2105,Asesoría no registrada,"Mi asesoría no aparece en el sistema",docentes,en_proceso,media,DESK2,Soporte Planta Alta
-U026,751606,jorge.mendoza@uni.mx,hash_jorge,docente,TK-2106,Clase sin salón asignado,"La clase de hoy no tiene salón",docentes,cerrado,baja,DIR1,Dirección Académica
-U027,751607,alejandra.rios@uni.mx,hash_ale,estudiante,TK-2107,Objeto perdido,"Se reporta objeto olvidado en cafetería",cosas_perdidas,abierto,media,CAF1,Cafetería
-U028,751608,ricardo.flores@uni.mx,hash_ricardo,estudiante,TK-2108,Objeto perdido,"Se reporta chamarra olvidada",cosas_perdidas,abierto,baja,BIB1,Biblioteca
-U029,751609,sofia.cruz@uni.mx,hash_sofia,estudiante,TK-2109,Objeto perdido,"Se encontró mochila cerca del gimnasio",cosas_perdidas,en_proceso,media,GYM1,Gimnasio
-U030,751610,diego.soto@uni.mx,hash_diego,docente,TK-2110,Falla en audio,"Las bocinas del aula 204 no funcionan",instalaciones,abierto,alta,ENT2,Aula 204
-U031,751611,fer.hernandez@uni.mx,hash_fer,estudiante,TK-2111,Proyector desenfocado,"La imagen se ve borrosa",instalaciones,cerrado,media,LAB2,Laboratorio 2
-U032,751612,monica.vazquez@uni.mx,hash_monica,docente,TK-2112,Grupo no visible,"No veo mi grupo en la plataforma",docentes,abierto,media,DESK3,Soporte Académico
-U033,751613,adrian.suarez@uni.mx,hash_adrian,estudiante,TK-2113,Evaluación duplicada,"Mi actividad aparece dos veces",docentes,cerrado,baja,DESK1,Soporte Planta Baja
-U034,751614,valeria.moreno@uni.mx,hash_valeria,estudiante,TK-2114,Objeto perdido,"Se reportan llaves encontradas",cosas_perdidas,cerrado,baja,ENT1,Entrada Principal
-U035,751615,hector.luna@uni.mx,hash_hector,docente,TK-2115,Falla en iluminación,"Un foco del laboratorio está fundido",instalaciones,en_proceso,media,LAB3,Laboratorio 3
-U036,751616,patricia.navarro@uni.mx,hash_paty,estudiante,TK-2116,Objeto perdido,"Se perdió cartera",cosas_perdidas,abierto,alta,CAF1,Cafetería
-U037,751617,roberto.castro@uni.mx,hash_rob,docente,TK-2117,Reporte de calificación,"Una calificación aparece en blanco",docentes,en_proceso,media,DIR2,Jefatura Académica
-U038,751618,andrea.mejia@uni.mx,hash_andrea,estudiante,TK-2118,Computadora lenta,"La máquina 5 va muy lenta",instalaciones,abierto,media,LAB1,Laboratorio 1
-U039,751619,marco.diaz@uni.mx,hash_marco,estudiante,TK-2119,Objeto perdido,"Se encontró USB",cosas_perdidas,cerrado,baja,BIB1,Biblioteca
-U040,751620,elisabeth.rojas@uni.mx,hash_eli,docente,TK-2120,Falla en impresora,"La impresora marca error",instalaciones,abierto,alta,OFI1,Oficina 1
+U021,751601,ana.garcia@uni.mx,hash_ana,estudiante,TK-2101,Falla en proyector,"El proyector no enciende en el aula 101",instalaciones,abierto,alta,ENT1,Aula 101,,
+U022,751602,luis.perez@uni.mx,hash_luis,docente,TK-2102,Daño en computadora,"La PC de la oficina 203 no prende",instalaciones,en_proceso,alta,OFI2,Oficina 203,,
+U023,751603,mariana.lopez@uni.mx,hash_mariana,estudiante,TK-2103,Problema con aire acondicionado,"El aire acondicionado tira agua",instalaciones,abierto,media,LAB1,Laboratorio 1,,
+U024,751604,carlos.ramirez@uni.mx,hash_carlos,docente,TK-2104,Reporte de acceso a plataforma,"No puedo entrar al LMS",docentes,abierto,media,DESK1,Soporte Planta Baja,,
+U025,751605,paula.santos@uni.mx,hash_paula,estudiante,TK-2105,Asesoría no registrada,"Mi asesoría no aparece en el sistema",docentes,en_proceso,media,DESK2,Soporte Planta Alta,,
+U026,751606,jorge.mendoza@uni.mx,hash_jorge,docente,TK-2106,Clase sin salón asignado,"La clase de hoy no tiene salón",docentes,cerrado,baja,DIR1,Dirección Académica,,
+U027,751607,alejandra.rios@uni.mx,hash_ale,estudiante,TK-2107,Objeto perdido,"Se reporta objeto olvidado en cafetería",cosas_perdidas,abierto,media,CAF1,Cafetería,,
+U028,751608,ricardo.flores@uni.mx,hash_ricardo,estudiante,TK-2108,Objeto perdido,"Se reporta chamarra olvidada",cosas_perdidas,abierto,baja,BIB1,Biblioteca,,
+U029,751609,sofia.cruz@uni.mx,hash_sofia,estudiante,TK-2109,Objeto perdido,"Se encontró mochila cerca del gimnasio",cosas_perdidas,en_proceso,media,GYM1,Gimnasio,,
+U030,751610,diego.soto@uni.mx,hash_diego,docente,TK-2110,Falla en audio,"Las bocinas del aula 204 no funcionan",instalaciones,abierto,alta,ENT2,Aula 204,,
+U031,751611,fer.hernandez@uni.mx,hash_fer,estudiante,TK-2111,Proyector desenfocado,"La imagen se ve borrosa",instalaciones,cerrado,media,LAB2,Laboratorio 2,,
+U032,751612,monica.vazquez@uni.mx,hash_monica,docente,TK-2112,Grupo no visible,"No veo mi grupo en la plataforma",docentes,abierto,media,DESK3,Soporte Académico,,
+U033,751613,adrian.suarez@uni.mx,hash_adrian,estudiante,TK-2113,Evaluación duplicada,"Mi actividad aparece dos veces",docentes,cerrado,baja,DESK1,Soporte Planta Baja,,
+U034,751614,valeria.moreno@uni.mx,hash_valeria,estudiante,TK-2114,Objeto perdido,"Se reportan llaves encontradas",cosas_perdidas,cerrado,baja,ENT1,Entrada Principal,,
+U035,751615,hector.luna@uni.mx,hash_hector,docente,TK-2115,Falla eléctrica,"Un foco del laboratorio está fundido",instalaciones,en_proceso,media,LAB3,Laboratorio 3,,
+U036,751616,patricia.navarro@uni.mx,hash_paty,estudiante,TK-2116,Objeto perdido,"Se perdió cartera",cosas_perdidas,abierto,alta,CAF1,Cafetería,,
+U037,751617,roberto.castro@uni.mx,hash_rob,docente,TK-2117,Reporte de calificación,"Una calificación aparece en blanco",docentes,en_proceso,media,DIR2,Jefatura Académica,,
+U038,751618,andrea.mejia@uni.mx,hash_andrea,estudiante,TK-2118,Computadora lenta,"La máquina 5 va muy lenta",instalaciones,abierto,media,LAB1,Laboratorio 1,,
+U039,751619,marco.diaz@uni.mx,hash_marco,estudiante,TK-2119,Objeto perdido,"Se encontró USB",cosas_perdidas,cerrado,baja,BIB1,Biblioteca,,
+U040,751620,elisabeth.rojas@uni.mx,hash_eli,docente,TK-2120,Falla en impresora,"La impresora marca error",instalaciones,abierto,alta,OFI1,Oficina 1,,
 U041,751621,raul.martinez@uni.mx,hash_raul,estudiante,TK-2121,Objeto perdido,"Se encontró paraguas en la entrada del edificio",cosas_perdidas,abierto,media,ENT2,Entrada edificio,Paraguas negro,activo
 U042,751622,daniela.ortiz@uni.mx,hash_dani,estudiante,TK-2122,Objeto perdido,"Reportan lentes olvidados en laboratorio",cosas_perdidas,en_proceso,baja,LAB1,Laboratorio 1,Lentes de vista,activo
 U043,751623,sebastian.gomez@uni.mx,hash_sebas,docente,TK-2123,Objeto perdido,"Llaves halladas en estacionamiento norte",cosas_perdidas,cerrado,baja,EST1,Estacionamiento norte,Llaves con llavero rojo,encontrado
@@ -47,5 +47,25 @@ U045,751625,hugo.sanchez@uni.mx,hash_hugo,estudiante,TK-2125,Objeto perdido,"Se 
 U046,751626,ana.torres@uni.mx,hash_ana2,docente,TK-2126,Objeto perdido,"USB olvidado en salón de clases",cosas_perdidas,en_proceso,media,AUL3,Aula 3,USB 32GB,activo
 U047,751627,mario.villalobos@uni.mx,hash_mario,estudiante,TK-2127,Objeto perdido,"Billetera encontrada en pasillo central",cosas_perdidas,abierto,alta,PAS1,Pasillo central,Billetera café,activo
 U048,751628,fernanda.lopez@uni.mx,hash_fer2,estudiante,TK-2128,Objeto perdido,"Se reporta mochila perdida en gimnasio",cosas_perdidas,en_proceso,media,GYM1,Gimnasio,Mochila azul,activo
-U049,751629,ricardo.mora@uni.mx,hash_mora,estudiante,TK-2129,Objeto perdido,"Libro extraviado en la zona de estudios",cosas_perdidas,abierto,baja,BIB2,Área de estudio,Libro de cálculo,activo
+U049,751629,ricardo.mora@uni.mx,hash_mora,estudiante,TK-2129,Objeto perdido,"Libro extraviado en la zona de estudios",cosas_perdidas,abierto,baja,BIB2,Area de estudio,Libro de cálculo,activo
 U050,751630,julieta.castro@uni.mx,hash_juli,estudiante,TK-2130,Objeto perdido,"Audífonos encontrados en cafetería",cosas_perdidas,cerrado,baja,CAF1,Cafetería,Audífonos blancos,encontrado
+U051,751631,isaac.romero@uni.mx,hash_isaac,estudiante,TK-2131,Falla de WiFi,"No hay conexión en el edificio B",instalaciones,abierto,alta,EDB1,Edificio B,,
+U052,751632,karla.mendez@uni.mx,hash_karla,docente,TK-2132,Problema con videoproyector,"El cable HDMI no funciona",instalaciones,en_proceso,media,A201,Aula 201,,
+U053,751633,lorena.vargas@uni.mx,hash_lorena,estudiante,TK-2133,Objeto perdido,"Se reportan audífonos olvidados en biblioteca",cosas_perdidas,abierto,media,BIB1,Biblioteca,Audífonos inalámbricos,activo
+U054,751634,sergio.pena@uni.mx,hash_sergio,docente,TK-2134,Error en calificaciones,"La calificación final no se muestra",docentes,en_proceso,media,DESK3,Soporte Académico,,
+U055,751635,melissa.guillen@uni.mx,hash_melissa,estudiante,TK-2135,Computadora sin mouse,"La PC 12 no tiene mouse",instalaciones,abierto,baja,LAB4,Laboratorio 4,,
+U056,751636,raul.lozano@uni.mx,hash_raul2,estudiante,TK-2136,Objeto perdido,"Se encontró chamarra en pasillo norte",cosas_perdidas,cerrado,baja,PAS2,Pasillo norte,Chamarra azul,encontrado
+U057,751637,camila.castro@uni.mx,hash_camila,docente,TK-2137,Salón muy frío,"El aire acondicionado está muy fuerte",instalaciones,abierto,media,A305,Aula 305,,
+U058,751638,ivan.silva@uni.mx,hash_ivan,estudiante,TK-2138,Objeto perdido,"Se perdió calculadora en laboratorio",cosas_perdidas,abierto,alta,LAB2,Laboratorio 2,Calculadora científica,activo
+U059,751639,paola.reyes@uni.mx,hash_paola2,estudiante,TK-2139,Proyector sin lámpara,"El proyector del auditorio no enciende",instalaciones,en_proceso,alta,AUD2,Auditorio 2,,
+U060,751640,enzo.martinez@uni.mx,hash_enzo,docente,TK-2140,Reporte de asistencia,"Alumnos no aparecen en lista",docentes,abierto,media,DIR1,Dirección Académica,,
+U061,751641,renata.soto@uni.mx,hash_renata,estudiante,TK-2141,Objeto perdido,"Se reporta estuche de lentes perdido",cosas_perdidas,en_proceso,media,CAF1,Cafetería,Estuche de lentes,activo
+U062,751642,alejandro.rico@uni.mx,hash_rico,docente,TK-2142,Problema con proyector,"Imagen se ve de cabeza",instalaciones,cerrado,media,A102,Aula 102,,
+U063,751643,ximena.vera@uni.mx,hash_ximena,estudiante,TK-2143,Consultas de examen,"No puede ver la retroalimentación del examen",docentes,abierto,baja,DESK2,Soporte Planta Alta,,
+U064,751644,gerardo.lopez@uni.mx,hash_gerardo,estudiante,TK-2144,Objeto perdido,"Se encontró mochila en estacionamiento",cosas_perdidas,cerrado,media,EST2,Estacionamiento sur,Mochila negra,encontrado
+U065,751645,monse.garcia@uni.mx,hash_monse,estudiante,TK-2145,Fuga en lavabo,"Lavabo del baño del tercer piso gotea",instalaciones,abierto,media,BA03,Baño tercer piso,,
+U066,751646,oscar.domingiguez@uni.mx,hash_oscar,docente,TK-2146,Grupo duplicado,"El mismo grupo aparece dos veces en el sistema",docentes,en_proceso,baja,DESK3,Soporte Académico,,
+U067,751647,diana.fuentes@uni.mx,hash_diana,estudiante,TK-2147,Objeto perdido,"Se extravió cartera en la cafetería",cosas_perdidas,abierto,alta,CAF1,Cafetería,Cartera roja,activo
+U068,751648,javier.santos@uni.mx,hash_javi,estudiante,TK-2148,Sin acceso a laboratorio,"No reconoce mi huella para entrar",instalaciones,abierto,media,LABAC,Acceso laboratorios,,
+U069,751649,rebeca.munoz@uni.mx,hash_rebeca,docente,TK-2149,Error en portal docente,"No puede subir calificaciones finales",docentes,en_proceso,alta,DESI,Oficina docentes,,
+U070,751650,frida.hernandez@uni.mx,hash_frida,estudiante,TK-2150,Objeto perdido,"Se reportan llaves en casillero",cosas_perdidas,cerrado,baja,CAS1,Casilleros,Llaves con llavero azul,encontrado
