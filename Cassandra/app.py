@@ -29,7 +29,7 @@ def print_menu():
         3: "Q3 - Conteo por categoria y dia",
         4: "Q4 - Tickets por profesor",
         5: "Q5 - Historial de un ticket",
-        6: "Q6 - Tickets por instalacion y rango de fechas",
+        6: "Q6 - tickets_por_instalacion_fechas",
         7: "Q7 - Tickets por estado",
         8: "Q8 - Tickets por rango de fechas (global)",
         9: "Q9 - Tickets por usuario y dia",
@@ -91,7 +91,7 @@ def main():
             model.historial_ticket(session, ticket_id)
 
         elif opcion == 6:
-            install_id = input("install_id (ej. DESI): ").strip()
+            install_id = input("install_id (ej. biblioteca): ").strip()
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
             model.tickets_por_instalacion_rango(session, install_id, f1, f2)
@@ -118,8 +118,8 @@ def main():
             model.conteo_por_prioridad(session)
 
         elif opcion == 12:
-            depto = input("Departamento (ej. DESI): ").strip()
-            model.tickets_por_departamento(session, depto)
+            depto = input("install_id / instalacion (ej. DESI): ").strip()
+            model.tickets_por_instalaciones(session, depto)
 
         elif opcion == 13:
             model.tickets_por_turno(session)

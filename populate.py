@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from pymongo.errors import DuplicateKeyError
 
 from connect import (
@@ -66,6 +66,7 @@ def insert_ticket(row):
         "place_name": row.get("place_name"),
         "object_name": row.get("object_name"), 
         "lost_status": row.get("lost_status"),
+        "turno": row.get("turno"),
         "created_at": datetime.utcnow(),
     }
 
@@ -93,9 +94,7 @@ def _get_turno(created_at: datetime) -> str:
     hour = created_at.hour
     if 7 <= hour < 15:
         return "manana"
-    if 15 <= hour < 22:
-        return "tarde"
-    return "noche"
+    return "tarde_noche"
 
 
 def populate_cassandra():
@@ -118,13 +117,13 @@ def populate_cassandra():
         "conteo_tickets_por_categoria_dia",
         "tickets_por_profesor",
         "historial_ticket",
-        "tickets_por_instalacion",
+        "tickets_por_instalacion_fechas",
         "tickets_por_estado",
         "filtrado_tickets_por_fecha",
         "tickets_por_usuario_dia",
         "tickets_por_rol",
         "conteo_tickets_por_prioridad",
-        "tickets_por_departamento",
+        "tickets_por_instalaciones",
         "tickets_por_turno",
     ]
     for nombre in tablas:
@@ -161,7 +160,7 @@ def populate_cassandra():
     )
     insert_instalacion = session.prepare(
         """
-        INSERT INTO tickets_por_instalacion
+        INSERT INTO tickets_por_instalacion_fechas
         (install_id, fecha, ticket_id, categoria, estado, prioridad)
         VALUES (?, ?, ?, ?, ?, ?)
         """
@@ -196,7 +195,7 @@ def populate_cassandra():
     )
     insert_departamento = session.prepare(
         """
-        INSERT INTO tickets_por_departamento
+        INSERT INTO tickets_por_instalaciones
         (departamento, fecha, ticket_id, estado, categoria)
         VALUES (?, ?, ?, ?, ?)
         """
@@ -238,7 +237,30 @@ def populate_cassandra():
         estado = ticket["status"]
         prioridad = ticket["priority"]
         install_id = ticket["installation_id"]
-        created_at = ticket.get("created_at") or now
+
+        #Fecha real de creacion en Mongo 
+        _ = ticket.get("created_at") or now
+
+        # Repartimos tickets en septiembre, octubre y noviembre de 2025
+        try:
+            num = int(ticket_id.split("-")[1])  
+        except (IndexError, ValueError):
+            num = 0
+
+        mod = num % 3
+        if mod == 0:
+            month = 9   # septiembre
+        elif mod == 1:
+            month = 10  # octubre
+        else:
+            month = 11  # noviembre
+
+        # Dia entre 1 y 28 para evitar problemas de fin de mes
+        day = (num % 28) + 1
+        #Hora simulada 
+        hour = 8 + (num % 10)  
+
+        created_at = datetime(2025, month, day, hour, 0, 0)
         fecha_dia = created_at.date()
 
         user = usuarios.get(user_id, {})
@@ -246,11 +268,18 @@ def populate_cassandra():
         email = user.get("email", user_id)
         descripcion = ticket.get("description", "")
 
-        # 1) alertas_tickets_vencidos: dias inactivos = diferencia con hoy
-        dias_inactivos = (now - created_at).days
+        #simulamos dias inactivos segun prioridad/estado
+        base_por_prioridad = {"alta": 10, "media": 5, "baja": 2}
+        dias_inactivos = base_por_prioridad.get(prioridad, 3)
+        if estado == "cerrado":
+            dias_inactivos += 2
+        elif estado == "en_proceso":
+            dias_inactivos = max(dias_inactivos - 1, 0)
+
+        fecha_ultimo_cambio = now - timedelta(days=dias_inactivos)
         session.execute(
             insert_alerta,
-            (dias_inactivos, ticket_id, created_at, estado),
+            (dias_inactivos, ticket_id, fecha_ultimo_cambio, estado),
         )
 
         # 2) historial_por_usuario: un evento de creacion por ticket
@@ -275,7 +304,7 @@ def populate_cassandra():
             (ticket_id, created_at, "creacion", email, "N/A", estado),
         )
 
-        # 6) tickets_por_instalacion
+        # 6) tickets_por_instalacion_fechas
         session.execute(
             insert_instalacion,
             (install_id, created_at, ticket_id, categoria, estado, prioridad),
@@ -309,7 +338,7 @@ def populate_cassandra():
         # 11) tickets_por_prioridad 
         session.execute(update_prioridad, (prioridad,))
 
-        # 12) tickets_por_departamento (usamos installation_id como departamento)
+        # 12) tickets_por_instalaciones (usamos installation_id como departamento)
         departamento = install_id
         session.execute(
             insert_departamento,
@@ -317,7 +346,7 @@ def populate_cassandra():
         )
 
         # 13) tickets_por_turno 
-        turno = _get_turno(created_at)
+        turno = ticket.get("turno") or _get_turno(created_at)
         session.execute(update_turno, (turno,))
 
     print("Populate Cassandra: inserciones completadas.")

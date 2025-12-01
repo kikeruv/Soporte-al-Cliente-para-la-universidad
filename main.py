@@ -113,13 +113,13 @@ def borrar_datos():
             "conteo_tickets_por_categoria_dia",
             "tickets_por_profesor",
             "historial_ticket",
-            "tickets_por_instalacion",
+            "tickets_por_instalacion_fechas",
             "tickets_por_estado",
             "filtrado_tickets_por_fecha",
             "tickets_por_usuario_dia",
             "tickets_por_rol",
             "conteo_tickets_por_prioridad",
-            "tickets_por_departamento",
+            "tickets_por_instalaciones",
             "tickets_por_turno",
         ]
         for nombre in tablas:
@@ -139,8 +139,8 @@ def menu_instalaciones():
     while True:
         print("\n=== Instalaciones M y C ===")
         print("1. Instalaciones con mas incidencias M")
-        print("2. Tickets por instalacion y rango de fechas C")
-        print("3. Tickets por departamento C")
+        print("2. tickets_por_instalacion_fechas C")
+        print("3. tickets_por_instalaciones C")
         print("0. Volver al menu principal")
 
         try:
@@ -154,13 +154,13 @@ def menu_instalaciones():
         elif op == 1:
             instalaciones_con_mas_incidencias()
         elif op == 2:
-            install_id = input("install_id (ej. DESI): ").strip()
+            install_id = input("install_id (ej. biblioteca): ").strip()
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
             cass_model.tickets_por_instalacion_rango(session, install_id, f1, f2)
         elif op == 3:
-            depto = input("Departamento (ej. DESI): ").strip()
-            cass_model.tickets_por_departamento(session, depto)
+            install_id = input("install_id / instalacion (ej. biblioteca): ").strip()
+            cass_model.tickets_por_instalaciones(session, install_id)
         else:
             print("Opcion no valida.")
 
@@ -201,13 +201,13 @@ def menu_tickets():
         print("3. Titulos que empiezan con 'Falla' o 'Dano' M")
         print("4. Busqueda por texto en tickets M")
         print("5. Tickets cerrados por categoria M")
-        print("6. Alertas de tickets vencidos C")
-        print("7. Conteo de tickets por categoria y dia C")
-        print("8. Historial de un ticket C")
-        print("9. Tickets por estado C")
-        print("10. Tickets por rango de fechas (global) C")
-        print("11. Conteo de tickets por prioridad C")
-        print("12. Tickets por turno C")
+        print("6. alertas_tickets_vencidos C")
+        print("7. conteo_tickets_por_categoria_dia C")
+        print("8. historial_ticket C")
+        print("9. tickets_por_estado C")
+        print("10. filtrado_tickets_por_fecha C")
+        print("11. conteo_tickets_por_prioridad C")
+        print("12. tickets_por_turno C")
         print("0. Volver al menu principal")
 
         try:
@@ -260,8 +260,8 @@ def menu_docentes():
 
     while True:
         print("\n=== Docentes / reportes academicos C ===")
-        print("1. Tickets por profesor C")
-        print("2. Tickets por rol de usuario C")
+        print("1. tickets_por_profesor (Cassandra)")
+        print("2. tickets_por_rol (Cassandra)")
         print("0. Volver al menu principal")
 
         try:
@@ -273,7 +273,39 @@ def menu_docentes():
         if op == 0:
             break
         elif op == 1:
-            profesor_id = input("profesor_id (user_id del docente): ").strip()
+            # Listar docentes desde Mongo para que el profesor se identifique
+            docentes = list(
+                db.users.find(
+                    {"role": "docente"},
+                    {"_id": 0, "user_id": 1, "expediente": 1, "email": 1},
+                )
+            )
+            if not docentes:
+                print("\nNo hay docentes registrados en Mongo.\n")
+                continue
+
+            print("\n=== Docentes registrados (Mongo) ===")
+            for d in docentes:
+                print(f"{d['user_id']} | {d['expediente']} | {d['email']}")
+            print("====================================")
+
+            clave = input(
+                "\nEscribe tu user_id o tu email: "
+            ).strip()
+            if not clave:
+                print("Entrada vacia, regresando al menu de docentes.\n")
+                continue
+
+            docente = db.users.find_one(
+                {"$or": [{"user_id": clave}, {"email": clave}]},
+                {"_id": 0, "user_id": 1, "email": 1},
+            )
+            if not docente:
+                print("\nNo se encontro ningun docente con ese user_id o email.\n")
+                continue
+
+            profesor_id = docente["user_id"]
+            print(f"\nMostrando tickets para docente: {docente['email']} (user_id={profesor_id})")
             cass_model.tickets_por_profesor(session, profesor_id)
         elif op == 2:
             rol = input("Rol (docente/estudiante): ").strip()
@@ -291,8 +323,8 @@ def menu_usuarios():
     while True:
         print("\n=== Usuarios M + C ===")
         print("1. Mostrar todos los usuarios M")
-        print("2. Historial de tickets por usuario C")
-        print("3. Tickets por usuario y dia C")
+        print("2. historial_por_usuario (Cassandra)")
+        print("3. tickets_por_usuario_dia (Cassandra)")
         print("0. Volver al menu principal")
 
         try:
