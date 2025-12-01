@@ -5,6 +5,19 @@ from connect import (
     close_client_stub,
     db,
 )
+
+from Mongo.client import (
+    filtrar_por_categoria,
+    resumen_estado,
+    buscar_titulos_falla,
+    lugares_con_mas_perdidas,
+    instalaciones_con_mas_incidencias,
+    buscar_por_texto,
+    resumen_objetos_perdidos,
+    tickets_cerrados_por_categoria,
+    mostrar_usuarios,
+)
+
 import populate
 
 ##### Esto esta hecho con Chat ya que solo es para verificar si estan conectadas las bases de datos 
@@ -48,14 +61,20 @@ def print_menu():
     print("3. Ver historial de soporte de un cliente")
 
     #  MONGODB 
-    print("4. Listar clientes registrados")
-    print("5. Listar tickets abiertos")
-    print("6. Buscar ticket por ID")
+    print("4. Total de tickets por categoría")
+    print("5. Total de tickets por estado")
+    print("6. Títulos que empiezan con 'Falla' o 'Daño'")
+    print("7. Lugares con más reportes de pérdidas")
+    print("8. Instalaciones con más incidencias")
+    print("9. Búsqueda por texto en tickets")
+    print("10. Resumen de objetos perdidos")
+    print("11. Tickets cerrados por categoría")
+    print("12. Mostar todos los usuarios")
 
     #  DGRAPH 
-    print("7. Ver grafo de clientes y tickets")
-    print("8. Ver relaciones de un cliente")
-    print("9. Ver tickets asignados a un agente")
+    print("13. Ver grafo de clientes y tickets")
+    print("14. Ver relaciones de un cliente")
+    print("15. Ver tickets asignados a un agente")
 
     #probar conexiones
     print("10. Probar conexiones a Cassandra, Mongo y Dgraph")
@@ -73,38 +92,37 @@ def main():
             print("Opción inválida. Debe ser un número.\n")
             continue
 
-        # CASSANDRA
+        # CASSANDRA (aún sin implementación real)
         if opcion == 1:
-            print("\n Ver tickets por cliente.\n")
+            print("\nVer tickets por cliente (Cassandra).\n")
 
         elif opcion == 2:
-            print("\n Ver tickets por fecha.\n")
+            print("\nVer tickets por fecha (Cassandra).\n")
 
         elif opcion == 3:
-            print("\n Ver historial de soporte de un cliente.\n")
+            print("\nVer historial de soporte de un cliente (Cassandra).\n")
 
         # MONGODB
         elif opcion == 4:
-            print("\nListar clientes registrados.\n")
+            filtrar_por_categoria()
 
         elif opcion == 5:
-            print("\n Listar tickets abiertos.\n")
+            resumen_estado()
 
         elif opcion == 6:
-            print("\n Buscar ticket por ID.\n")
+            buscar_titulos_falla()
 
-        # DGRAPH
         elif opcion == 7:
-            print("\n Ver grafo de clientes y tickets.\n")
+            lugares_con_mas_perdidas()
 
         elif opcion == 8:
-            print("\n Ver relaciones de un cliente.\n")
+            instalaciones_con_mas_incidencias()
 
         elif opcion == 9:
-            print("\n Ver tickets asignados a un agente.\n")
+            buscar_por_texto()
 
         elif opcion == 10:
-            test_connections()
+            resumen_objetos_perdidos()
 
         elif opcion == 11:
             print("\nEjecutando populate de Mongo + Cassandra + Dgraph\n")
@@ -117,6 +135,7 @@ def main():
 
         else:
             print("\nOpción no válida.\n")
+
 
 if __name__ == "__main__":
     main()
