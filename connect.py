@@ -1,4 +1,3 @@
-
 # Imports para Cassandra
 import logging
 import os 
@@ -16,13 +15,14 @@ import pydgraph
 # Set logger
 log = logging.getLogger("cassandra")
 log.setLevel(logging.INFO)
-handler = logging.FileHandler('logistics.log')
+handler = logging.FileHandler('proyecto.log')
 handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
 log.addHandler(handler)
 
 # Read env vars related to Cassandra App
 CLUSTER_IPS = os.getenv('CASSANDRA_CLUSTER_IPS', '127.0.0.1')
-KEYSPACE = os.getenv('CASSANDRA_KEYSPACE', 'logistics')
+# Keyspace por defecto para este proyecto
+KEYSPACE = os.getenv('CASSANDRA_KEYSPACE', 'proyecto')
 REPLICATION_FACTOR = os.getenv('CASSANDRA_REPLICATION_FACTOR', '1')
 
 def get_cassandra_session():

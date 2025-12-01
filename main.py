@@ -57,9 +57,9 @@ def print_menu():
     print("8. Ver relaciones de un cliente")
     print("9. Ver tickets asignados a un agente")
 
-    # Probar conexiones a las tres BD
+    #probar conexiones
     print("10. Probar conexiones a Cassandra, Mongo y Dgraph")
-    print("11. Ejecutar populate de datos desde CSV")
+    print("11. Ejecutar populate (Mongo + Cassandra + Dgraph)")
 
     print("\n0. Salir\n")
 
@@ -107,7 +107,7 @@ def main():
             test_connections()
 
         elif opcion == 11:
-            print("\nEjecutando populate de Mongo\n")
+            print("\nEjecutando populate de Mongo + Cassandra + Dgraph\n")
             populate.main()
             print()
 
