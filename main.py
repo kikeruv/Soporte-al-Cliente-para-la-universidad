@@ -318,7 +318,7 @@ def menu_usuarios():
 
 ##### Menu principal #####
 def print_menu_principal():
-    print("\n=== Sistema de Soporte - Menu Principal ===")
+    print("\n=== Sistema Soporte ITESO - Menu Principal ===")
     print("1. Cosas perdidas M")
     print("2. Instalaciones M + C")
     print("3. Docentes / reportes academicos C")
