@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from pymongo.errors import DuplicateKeyError
 import json
 import pydgraph
+import random
 
 from connect import (
     db,
@@ -14,9 +15,133 @@ from connect import (
 
 CSV_PATH = "data/data.csv"
 
+# ---------- Generador de CSV ----------
+
+def generar_csv_simple(archivo: str = CSV_PATH, filas: int = 50):
+
+    encabezados = [
+        "user_id", "expediente", "email", "password", "role",
+        "ticket_id", "title", "description", "category", "status", "priority",
+        "installation_id", "place_name", "object_name", "lost_status", "turno"
+    ]
+
+    roles = ["docente", "estudiante"]
+    categorias = ["instalaciones", "docentes", "cosas_perdidas"]
+    estados = ["abierto", "en_proceso", "cerrado"]
+    prioridades = ["alta", "media", "baja"]
+    installation_ids = [
+        "biblioteca",
+        "gimnasio",
+        "domo",
+        "lab_quimica",
+        "lab_computo",
+        "banos",
+        "estacionamiento",
+        "ingenierias",
+        "humanidades",
+        "negocios",
+        "apoyo_estudiantil",
+        "cafeteria",
+        "taller_ingenieria",
+        "cancha",
+        "auditorio",
+        "estudios",
+        "administracion",
+        "salon_multi",
+    ]
+    place_names = [
+        "Biblioteca central",
+        "Gimnasio principal",
+        "Domo deportivo",
+        "Laboratorio de quimica",
+        "Laboratorio de computo",
+        "Banos edificio A",
+        "Estacionamiento principal",
+        "Edificio ingenierias",
+        "Edificio humanidades",
+        "Edificio negocios",
+        "Centro de apoyo estudiantil",
+        "Cafeteria central",
+        "Sala de lectura",
+        "Taller de ingenieria",
+        "Cancha techada",
+        "Auditorio principal",
+        "Centro de medios",
+        "Edificio administrativo",
+        "Salon multidisciplinario",
+    ]
+    turnos = ["manana", "tarde_noche"]
+    descripciones = [
+        "El problema se presenta desde la semana pasada.",
+        "La falla ocurre solo en ciertos horarios.",
+        "Se requiere revision por parte de soporte.",
+        "El incidente afecta a varias personas del area.",
+        "Situacion reportada previamente sin solucion.",
+        "El equipo deja de responder aleatoriamente.",
+        "Se detecto comportamiento inusual en el sistema.",
+        "Se necesita revision fisica del equipo.",
+        "El servicio funciona de forma intermitente.",
+        "Error aparece despues de unos minutos de uso.",
+        "El usuario no puede completar sus actividades.",
+        "Se solicita atencion prioritaria al incidente.",
+        "El problema ocurre en mas de un dispositivo.",
+        "Sistema muestra mensajes de error al iniciar.",
+        "El equipo tarda demasiado en responder.",
+        "Configuracion no se guardo correctamente.",
+        "Se sospecha un problema de conexion.",
+        "El fallo se detecto durante la clase.",
+        "Impide uso normal del espacio.",
+        "Validar posible riesgo de seguridad.",
+    ]
+
+    with open(archivo, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(encabezados)
+
+        ticket_counter = 0
+
+        for i in range(1, filas + 1):
+            user_id = f"U{str(i).zfill(3)}"
+            expediente = random.randint(750000, 780000)
+            email = f"user{i}@iteso.mx"
+
+            password = "".join(str(random.randint(0, 9)) for _ in range(8))
+
+            role = random.choice(roles)
+
+            # 3 tickets por usuario
+            for _ in range(3):
+                ticket_counter += 1
+                ticket_id = f"TK-{3000 + ticket_counter}"
+
+                category = random.choice(categorias)
+                status = random.choice(estados)
+                priority = random.choice(prioridades)
+
+                installation_id = random.choice(installation_ids)
+                place_name = random.choice(place_names)
+
+                title = f"Reporte {ticket_counter}"
+                description = random.choice(descripciones)
+
+                if category == "cosas_perdidas":
+                    object_name = random.choice(["Cartera", "Llaves", "USB", "Mochila", "Guantes"])
+                    lost_status = random.choice(["activo", "encontrado"])
+                else:
+                    object_name = ""
+                    lost_status = ""
+
+                turno = random.choice(turnos)
+
+                writer.writerow([
+                    user_id, expediente, email, password, role,
+                    ticket_id, title, description, category, status, priority,
+                    installation_id, place_name, object_name, lost_status, turno
+                ])
+
+    print(f"CSV generado: {archivo}")
 
 # ---------- Mongo ----------
-
 
 def ensure_mongo_indexes():
     db.users.create_index("email", unique=True)
@@ -520,6 +645,9 @@ def populate_dgraph():
 
 def main():
     print("=== Populate: Mongo + Cassandra + Dgraph ===")
+
+    generar_csv_simple(archivo=CSV_PATH, filas=20)
+
     populate_mongo()
     populate_cassandra()
     populate_dgraph() 
