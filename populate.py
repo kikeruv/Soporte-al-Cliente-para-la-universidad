@@ -320,10 +320,10 @@ def populate_cassandra():
         VALUES (?, ?, ?, ?, ?, ?)
         """
     )
-    insert_departamento = session.prepare(
+    insert_instalaciones = session.prepare(
         """
         INSERT INTO tickets_por_instalaciones
-        (departamento, fecha, ticket_id, estado, categoria)
+        (instalacion, fecha, ticket_id, estado, categoria)
         VALUES (?, ?, ?, ?, ?)
         """
     )
@@ -465,11 +465,11 @@ def populate_cassandra():
         # 11) tickets_por_prioridad 
         session.execute(update_prioridad, (prioridad,))
 
-        # 12) tickets_por_instalaciones (usamos installation_id como departamento)
-        departamento = install_id
+        # 12) tickets_por_instalaciones (usamos installation_id como instalacion)
+        instalacion = install_id
         session.execute(
-            insert_departamento,
-            (departamento, created_at, ticket_id, estado, categoria),
+            insert_instalaciones,
+            (instalacion, created_at, ticket_id, estado, categoria),
         )
 
         # 13) tickets_por_turno 

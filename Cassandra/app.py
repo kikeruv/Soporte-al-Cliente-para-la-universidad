@@ -35,7 +35,7 @@ def print_menu():
         9: "Q9 - Tickets por usuario y dia",
         10: "Q10 - Tickets por rol de usuario",
         11: "Q11 - Conteo de tickets por prioridad",
-        12: "Q12 - Tickets por departamento",
+        12: "Q12 - Tickets por instalaciones",
         13: "Q13 - Tickets por turno",
         0: "Salir",
     }

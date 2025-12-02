@@ -157,15 +157,15 @@ CREATE_CONTEO_TICKETS_POR_PRIORIDAD_TABLE = """
 """
 
 
-# 12. Tickets por instalaciones (usando install_id como departamento)
+# 12. Tickets por instalaciones (usando install_id como instalacion)
 CREATE_TICKETS_POR_INSTALACIONES_TABLE = """
     CREATE TABLE IF NOT EXISTS tickets_por_instalaciones (
-        departamento text,
+        instalacion text,
         fecha timestamp,
         ticket_id text,
         estado text,
         categoria text,
-        PRIMARY KEY (departamento, fecha, ticket_id)
+        PRIMARY KEY (instalacion, fecha, ticket_id)
     ) WITH CLUSTERING ORDER BY (fecha DESC, ticket_id ASC);
 """
 
@@ -506,23 +506,23 @@ def conteo_por_prioridad(session):
         print(f"- {r.prioridad}: {r.total}")
 
 
-def tickets_por_instalaciones(session, departamento: str):
+def tickets_por_instalaciones(session, instalacion: str):
     """
     12) Tickets por instalaciones:
-        SELECT departamento, ticket_id, estado
+        SELECT instalacion, ticket_id, estado
         FROM tickets_por_instalaciones
-        WHERE departamento = 'DESI';
+        WHERE instalacion = 'DESI';
     """
     log.debug("Q12 - tickets_por_instalaciones")
     stmt = session.prepare(
         """
-        SELECT departamento, fecha, ticket_id, estado, categoria
+        SELECT instalacion, fecha, ticket_id, estado, categoria
         FROM tickets_por_instalaciones
-        WHERE departamento = ?
+        WHERE instalacion = ?
         """
     )
-    rows = session.execute(stmt, (departamento,))
-    print(f"\n=== Tickets de la instalacion {departamento} ===")
+    rows = session.execute(stmt, (instalacion,))
+    print(f"\n=== Tickets de la instalacion {instalacion} ===")
     for r in rows:
         print(f"Ticket {r.ticket_id} [{r.categoria}] estado={r.estado}")
 
