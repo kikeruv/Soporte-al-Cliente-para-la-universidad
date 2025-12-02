@@ -163,8 +163,8 @@ def populate_cassandra():
     insert_instalacion = session.prepare(
         """
         INSERT INTO tickets_por_instalacion_fechas
-        (install_id, fecha, ticket_id, categoria, estado, prioridad)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (install_id, fecha, ticket_id, categoria, estado, prioridad, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """
     )
     insert_estado = session.prepare(
@@ -184,8 +184,8 @@ def populate_cassandra():
     insert_usuario_dia = session.prepare(
         """
         INSERT INTO tickets_por_usuario_dia
-        (user_id, fecha, hora, ticket_id, categoria, estado)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (user_id, fecha, hora, ticket_id, categoria, estado, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """
     )
     insert_rol = session.prepare(
@@ -309,7 +309,7 @@ def populate_cassandra():
         # 6) tickets_por_instalacion_fechas
         session.execute(
             insert_instalacion,
-            (install_id, created_at, ticket_id, categoria, estado, prioridad),
+            (install_id, created_at, ticket_id, categoria, estado, prioridad, descripcion),
         )
 
         # 7) tickets_por_estado
@@ -327,7 +327,7 @@ def populate_cassandra():
         # 9) tickets_por_usuario_dia
         session.execute(
             insert_usuario_dia,
-            (user_id, fecha_dia, created_at, ticket_id, categoria, estado),
+            (user_id, fecha_dia, created_at, ticket_id, categoria, estado, descripcion),
         )
 
         # 10) tickets_por_rol

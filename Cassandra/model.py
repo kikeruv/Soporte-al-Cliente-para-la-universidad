@@ -85,6 +85,7 @@ CREATE_TICKETS_POR_INSTALACION_TABLE = """
         categoria text,
         estado text,
         prioridad text,
+        descripcion text,
         PRIMARY KEY (install_id, fecha, ticket_id)
     ) WITH CLUSTERING ORDER BY (fecha DESC, ticket_id ASC);
 """
@@ -126,6 +127,7 @@ CREATE_TICKETS_POR_USUARIO_DIA_TABLE = """
         ticket_id text,
         categoria text,
         estado text,
+        descripcion text,
         PRIMARY KEY ((user_id, fecha), hora, ticket_id)
     ) WITH CLUSTERING ORDER BY (hora DESC, ticket_id ASC);
 """
@@ -358,7 +360,7 @@ def tickets_por_instalacion_rango(
     ff = _parse_timestamp(fecha_fin)
     stmt = session.prepare(
         """
-        SELECT install_id, fecha, ticket_id, categoria, estado, prioridad
+        SELECT install_id, fecha, ticket_id, categoria, estado, prioridad, descripcion
         FROM tickets_por_instalacion_fechas
         WHERE install_id = ?
           AND fecha >= ?
@@ -373,7 +375,8 @@ def tickets_por_instalacion_rango(
     for r in rows:
         print(
             f"{r.fecha} - Ticket {r.ticket_id} "
-            f"[{r.categoria}] estado={r.estado} prioridad={r.prioridad}"
+            f"[{r.categoria}] estado={r.estado} prioridad={r.prioridad} "
+            f"desc={getattr(r, 'descripcion', '')}"
         )
 
 
@@ -414,7 +417,6 @@ def tickets_por_fecha_rango(
     log.debug("Q8 - tickets por fecha (ALLOW FILTERING)")
     fi = _parse_timestamp(fecha_inicio)
     ff = _parse_timestamp(fecha_fin)
-    # Nota: esto usa ALLOW FILTERING por simplicidad en el demo.
     stmt = session.prepare(
         """
         SELECT fecha, ticket_id, user_id, categoria, estado, prioridad
@@ -447,7 +449,7 @@ def tickets_por_usuario_dia(
     fecha = _parse_date(fecha_str)
     stmt = session.prepare(
         """
-        SELECT user_id, fecha, hora, ticket_id, categoria, estado
+        SELECT user_id, fecha, hora, ticket_id, categoria, estado, descripcion
         FROM tickets_por_usuario_dia
         WHERE user_id = ? AND fecha = ?
         """
@@ -457,7 +459,8 @@ def tickets_por_usuario_dia(
     for r in rows:
         print(
             f"{r.hora} - Ticket {r.ticket_id} "
-            f"[{r.categoria}] estado={r.estado}"
+            f"[{r.categoria}] estado={r.estado} "
+            f"desc={getattr(r, 'descripcion', '')}"
         )
 
 
