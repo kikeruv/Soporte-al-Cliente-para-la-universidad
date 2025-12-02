@@ -505,6 +505,7 @@ def populate_dgraph():
     descripcion: string @index(fulltext) .
     estado: string @index(exact) .
     prioridad: string @index(exact) .
+    categoria: string @index(exact) .
     fecha_creacion: datetime .
 
     instal_id: string @index(exact) .
@@ -525,6 +526,7 @@ def populate_dgraph():
       descripcion
       estado
       prioridad
+      categoria
       fecha_creacion
       creado_por
       afecta
@@ -610,12 +612,13 @@ def populate_dgraph():
             "estado": t.get("status", ""),
             "prioridad": t.get("priority", ""),
             "fecha_creacion": fecha_str,
+            "categoria": t.get("category", ""), 
         }
-
+        # Relacion creado_po usuario
         user_id = t.get("user_id")
         if user_id:
             ticket_obj["creado_por"] = {"uid": f"_:u_{user_id}"}
-
+    #Relacion afecta instalacion
         instal_id = t.get("installation_id")
         if instal_id:
             ticket_obj["afecta"] = {"uid": f"_:i_{instal_id}"}
