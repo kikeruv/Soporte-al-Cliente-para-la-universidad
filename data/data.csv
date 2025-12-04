@@ -1,61 +1,61 @@
 user_id,expediente,email,password,role,ticket_id,title,description,category,status,priority,installation_id,place_name,object_name,lost_status,turno
-U001,775582,user1@iteso.mx,15451463,estudiante,TK-3001,Reporte 1,Se sospecha un problema de conexion.,docentes,en_proceso,baja,negocios,Estacionamiento principal,,,tarde_noche
-U001,775582,user1@iteso.mx,15451463,estudiante,TK-3002,Reporte 2,Se necesita revision fisica del equipo.,instalaciones,abierto,alta,cafeteria,Centro de apoyo estudiantil,,,manana
-U001,775582,user1@iteso.mx,15451463,estudiante,TK-3003,Reporte 3,Configuracion no se guardo correctamente.,docentes,cerrado,alta,salon_multi,Gimnasio principal,,,manana
-U002,753148,user2@iteso.mx,86136716,estudiante,TK-3004,Reporte 4,Se detecto comportamiento inusual en el sistema.,cosas_perdidas,en_proceso,baja,biblioteca,Taller de ingenieria,Llaves,activo,tarde_noche
-U002,753148,user2@iteso.mx,86136716,estudiante,TK-3005,Reporte 5,Se solicita atencion prioritaria al incidente.,cosas_perdidas,cerrado,alta,ingenierias,Gimnasio principal,USB,encontrado,tarde_noche
-U002,753148,user2@iteso.mx,86136716,estudiante,TK-3006,Reporte 6,Se necesita revision fisica del equipo.,cosas_perdidas,en_proceso,alta,auditorio,Biblioteca central,Llaves,encontrado,manana
-U003,761156,user3@iteso.mx,04249957,estudiante,TK-3007,Reporte 7,El equipo deja de responder aleatoriamente.,docentes,cerrado,media,administracion,Edificio ingenierias,,,tarde_noche
-U003,761156,user3@iteso.mx,04249957,estudiante,TK-3008,Reporte 8,Se sospecha un problema de conexion.,instalaciones,cerrado,baja,apoyo_estudiantil,Edificio negocios,,,manana
-U003,761156,user3@iteso.mx,04249957,estudiante,TK-3009,Reporte 9,Se requiere revision por parte de soporte.,cosas_perdidas,abierto,baja,humanidades,Centro de apoyo estudiantil,Cartera,encontrado,tarde_noche
-U004,761772,user4@iteso.mx,49279142,docente,TK-3010,Reporte 10,Error aparece despues de unos minutos de uso.,docentes,abierto,alta,lab_quimica,Edificio humanidades,,,tarde_noche
-U004,761772,user4@iteso.mx,49279142,docente,TK-3011,Reporte 11,El equipo tarda demasiado en responder.,instalaciones,abierto,baja,estudios,Centro de apoyo estudiantil,,,tarde_noche
-U004,761772,user4@iteso.mx,49279142,docente,TK-3012,Reporte 12,El problema ocurre en mas de un dispositivo.,instalaciones,en_proceso,media,lab_computo,Estacionamiento principal,,,tarde_noche
-U005,751892,user5@iteso.mx,65189212,docente,TK-3013,Reporte 13,El servicio funciona de forma intermitente.,docentes,en_proceso,baja,lab_quimica,Centro de apoyo estudiantil,,,tarde_noche
-U005,751892,user5@iteso.mx,65189212,docente,TK-3014,Reporte 14,Se requiere revision por parte de soporte.,instalaciones,cerrado,alta,cafeteria,Edificio negocios,,,manana
-U005,751892,user5@iteso.mx,65189212,docente,TK-3015,Reporte 15,El problema se presenta desde la semana pasada.,docentes,en_proceso,alta,banos,Edificio administrativo,,,manana
-U006,771706,user6@iteso.mx,19465846,docente,TK-3016,Reporte 16,Se detecto comportamiento inusual en el sistema.,cosas_perdidas,cerrado,baja,taller_ingenieria,Sala de lectura,Cartera,activo,manana
-U006,771706,user6@iteso.mx,19465846,docente,TK-3017,Reporte 17,Se requiere revision por parte de soporte.,cosas_perdidas,cerrado,media,auditorio,Estacionamiento principal,USB,encontrado,manana
-U006,771706,user6@iteso.mx,19465846,docente,TK-3018,Reporte 18,Error aparece despues de unos minutos de uso.,instalaciones,cerrado,alta,cafeteria,Gimnasio principal,,,manana
-U007,775400,user7@iteso.mx,49204366,docente,TK-3019,Reporte 19,El servicio funciona de forma intermitente.,docentes,en_proceso,media,banos,Domo deportivo,,,manana
-U007,775400,user7@iteso.mx,49204366,docente,TK-3020,Reporte 20,Error aparece despues de unos minutos de uso.,cosas_perdidas,cerrado,media,estacionamiento,Auditorio principal,Cartera,activo,tarde_noche
-U007,775400,user7@iteso.mx,49204366,docente,TK-3021,Reporte 21,El usuario no puede completar sus actividades.,cosas_perdidas,en_proceso,alta,ingenierias,Edificio administrativo,Cartera,encontrado,tarde_noche
-U008,761061,user8@iteso.mx,57018890,estudiante,TK-3022,Reporte 22,Se solicita atencion prioritaria al incidente.,cosas_perdidas,abierto,media,taller_ingenieria,Centro de medios,Guantes,activo,manana
-U008,761061,user8@iteso.mx,57018890,estudiante,TK-3023,Reporte 23,Validar posible riesgo de seguridad.,docentes,cerrado,media,banos,Estacionamiento principal,,,manana
-U008,761061,user8@iteso.mx,57018890,estudiante,TK-3024,Reporte 24,Se necesita revision fisica del equipo.,instalaciones,en_proceso,media,gimnasio,Taller de ingenieria,,,tarde_noche
-U009,776006,user9@iteso.mx,37867332,estudiante,TK-3025,Reporte 25,Se necesita revision fisica del equipo.,instalaciones,en_proceso,media,biblioteca,Edificio ingenierias,,,tarde_noche
-U009,776006,user9@iteso.mx,37867332,estudiante,TK-3026,Reporte 26,Impide uso normal del espacio.,docentes,cerrado,baja,negocios,Cancha techada,,,manana
-U009,776006,user9@iteso.mx,37867332,estudiante,TK-3027,Reporte 27,Sistema muestra mensajes de error al iniciar.,cosas_perdidas,cerrado,baja,cancha,Edificio negocios,USB,encontrado,manana
-U010,766386,user10@iteso.mx,69493818,docente,TK-3028,Reporte 28,El problema ocurre en mas de un dispositivo.,cosas_perdidas,cerrado,media,domo,Sala de lectura,Guantes,encontrado,tarde_noche
-U010,766386,user10@iteso.mx,69493818,docente,TK-3029,Reporte 29,Se detecto comportamiento inusual en el sistema.,cosas_perdidas,abierto,alta,lab_quimica,Auditorio principal,Guantes,encontrado,manana
-U010,766386,user10@iteso.mx,69493818,docente,TK-3030,Reporte 30,Error aparece despues de unos minutos de uso.,docentes,en_proceso,baja,cafeteria,Laboratorio de computo,,,manana
-U011,770981,user11@iteso.mx,51729280,docente,TK-3031,Reporte 31,Impide uso normal del espacio.,instalaciones,abierto,baja,cancha,Edificio humanidades,,,tarde_noche
-U011,770981,user11@iteso.mx,51729280,docente,TK-3032,Reporte 32,El usuario no puede completar sus actividades.,docentes,cerrado,alta,biblioteca,Salon multidisciplinario,,,manana
-U011,770981,user11@iteso.mx,51729280,docente,TK-3033,Reporte 33,Se necesita revision fisica del equipo.,instalaciones,en_proceso,media,lab_computo,Laboratorio de quimica,,,manana
-U012,755504,user12@iteso.mx,02645399,docente,TK-3034,Reporte 34,Se requiere revision por parte de soporte.,instalaciones,en_proceso,alta,biblioteca,Biblioteca central,,,tarde_noche
-U012,755504,user12@iteso.mx,02645399,docente,TK-3035,Reporte 35,Validar posible riesgo de seguridad.,cosas_perdidas,cerrado,media,taller_ingenieria,Centro de medios,Cartera,encontrado,manana
-U012,755504,user12@iteso.mx,02645399,docente,TK-3036,Reporte 36,El problema se presenta desde la semana pasada.,cosas_perdidas,abierto,alta,apoyo_estudiantil,Cafeteria central,Llaves,activo,tarde_noche
-U013,761883,user13@iteso.mx,27782153,docente,TK-3037,Reporte 37,El incidente afecta a varias personas del area.,cosas_perdidas,cerrado,media,negocios,Domo deportivo,Cartera,encontrado,tarde_noche
-U013,761883,user13@iteso.mx,27782153,docente,TK-3038,Reporte 38,Validar posible riesgo de seguridad.,cosas_perdidas,cerrado,alta,salon_multi,Edificio humanidades,USB,activo,manana
-U013,761883,user13@iteso.mx,27782153,docente,TK-3039,Reporte 39,El problema ocurre en mas de un dispositivo.,docentes,en_proceso,alta,administracion,Edificio humanidades,,,manana
-U014,759755,user14@iteso.mx,76489336,docente,TK-3040,Reporte 40,La falla ocurre solo en ciertos horarios.,docentes,abierto,media,negocios,Taller de ingenieria,,,tarde_noche
-U014,759755,user14@iteso.mx,76489336,docente,TK-3041,Reporte 41,Situacion reportada previamente sin solucion.,cosas_perdidas,cerrado,media,estudios,Edificio humanidades,Mochila,activo,tarde_noche
-U014,759755,user14@iteso.mx,76489336,docente,TK-3042,Reporte 42,El equipo tarda demasiado en responder.,docentes,en_proceso,media,domo,Edificio humanidades,,,manana
-U015,777095,user15@iteso.mx,08888779,docente,TK-3043,Reporte 43,La falla ocurre solo en ciertos horarios.,docentes,abierto,alta,lab_quimica,Estacionamiento principal,,,tarde_noche
-U015,777095,user15@iteso.mx,08888779,docente,TK-3044,Reporte 44,El servicio funciona de forma intermitente.,instalaciones,abierto,media,cafeteria,Banos edificio A,,,manana
-U015,777095,user15@iteso.mx,08888779,docente,TK-3045,Reporte 45,Situacion reportada previamente sin solucion.,docentes,en_proceso,baja,biblioteca,Edificio administrativo,,,manana
-U016,763249,user16@iteso.mx,64123371,estudiante,TK-3046,Reporte 46,El incidente afecta a varias personas del area.,cosas_perdidas,abierto,baja,domo,Cancha techada,Llaves,activo,manana
-U016,763249,user16@iteso.mx,64123371,estudiante,TK-3047,Reporte 47,Situacion reportada previamente sin solucion.,docentes,abierto,media,domo,Auditorio principal,,,tarde_noche
-U016,763249,user16@iteso.mx,64123371,estudiante,TK-3048,Reporte 48,El problema se presenta desde la semana pasada.,instalaciones,abierto,alta,domo,Cancha techada,,,tarde_noche
-U017,766618,user17@iteso.mx,32474101,estudiante,TK-3049,Reporte 49,Se solicita atencion prioritaria al incidente.,cosas_perdidas,en_proceso,media,administracion,Cafeteria central,USB,encontrado,tarde_noche
-U017,766618,user17@iteso.mx,32474101,estudiante,TK-3050,Reporte 50,El equipo tarda demasiado en responder.,instalaciones,en_proceso,baja,lab_quimica,Domo deportivo,,,manana
-U017,766618,user17@iteso.mx,32474101,estudiante,TK-3051,Reporte 51,El fallo se detecto durante la clase.,docentes,abierto,media,administracion,Cancha techada,,,tarde_noche
-U018,772614,user18@iteso.mx,28265052,estudiante,TK-3052,Reporte 52,Se requiere revision por parte de soporte.,docentes,en_proceso,baja,taller_ingenieria,Edificio humanidades,,,manana
-U018,772614,user18@iteso.mx,28265052,estudiante,TK-3053,Reporte 53,El problema ocurre en mas de un dispositivo.,cosas_perdidas,en_proceso,baja,estacionamiento,Biblioteca central,Cartera,encontrado,tarde_noche
-U018,772614,user18@iteso.mx,28265052,estudiante,TK-3054,Reporte 54,Configuracion no se guardo correctamente.,instalaciones,en_proceso,alta,ingenierias,Taller de ingenieria,,,manana
-U019,770531,user19@iteso.mx,72520458,estudiante,TK-3055,Reporte 55,El servicio funciona de forma intermitente.,instalaciones,en_proceso,alta,biblioteca,Cancha techada,,,manana
-U019,770531,user19@iteso.mx,72520458,estudiante,TK-3056,Reporte 56,El fallo se detecto durante la clase.,instalaciones,abierto,alta,gimnasio,Salon multidisciplinario,,,tarde_noche
-U019,770531,user19@iteso.mx,72520458,estudiante,TK-3057,Reporte 57,Validar posible riesgo de seguridad.,cosas_perdidas,en_proceso,media,biblioteca,Auditorio principal,Mochila,activo,manana
-U020,768513,user20@iteso.mx,10124275,docente,TK-3058,Reporte 58,El usuario no puede completar sus actividades.,instalaciones,en_proceso,baja,banos,Salon multidisciplinario,,,tarde_noche
-U020,768513,user20@iteso.mx,10124275,docente,TK-3059,Reporte 59,Se sospecha un problema de conexion.,docentes,en_proceso,media,gimnasio,Sala de lectura,,,tarde_noche
-U020,768513,user20@iteso.mx,10124275,docente,TK-3060,Reporte 60,El fallo se detecto durante la clase.,cosas_perdidas,en_proceso,alta,cafeteria,Centro de medios,USB,encontrado,manana
+U001,774605,user1@iteso.mx,52268570,docente,TK-3001,Reporte 1,El problema se presenta desde la semana pasada.,instalaciones,cerrado,alta,banos,Edificio humanidades,,,manana
+U001,774605,user1@iteso.mx,52268570,docente,TK-3002,Reporte 2,El equipo deja de responder aleatoriamente.,instalaciones,abierto,alta,domo,Gimnasio principal,,,tarde_noche
+U001,774605,user1@iteso.mx,52268570,docente,TK-3003,Reporte 3,El problema se presenta desde la semana pasada.,cosas_perdidas,cerrado,media,auditorio,Edificio negocios,Cartera,encontrado,tarde_noche
+U002,750070,user2@iteso.mx,53528697,estudiante,TK-3004,Reporte 4,Sistema muestra mensajes de error al iniciar.,instalaciones,en_proceso,baja,negocios,Sala de lectura,,,tarde_noche
+U002,750070,user2@iteso.mx,53528697,estudiante,TK-3005,Reporte 5,Situacion reportada previamente sin solucion.,instalaciones,cerrado,baja,lab_computo,Centro de apoyo estudiantil,,,manana
+U002,750070,user2@iteso.mx,53528697,estudiante,TK-3006,Reporte 6,Configuracion no se guardo correctamente.,instalaciones,cerrado,media,negocios,Cafeteria central,,,tarde_noche
+U003,773767,user3@iteso.mx,55860288,docente,TK-3007,Reporte 7,Se sospecha un problema de conexion.,instalaciones,abierto,alta,estudios,Gimnasio principal,,,tarde_noche
+U003,773767,user3@iteso.mx,55860288,docente,TK-3008,Reporte 8,El equipo deja de responder aleatoriamente.,instalaciones,en_proceso,alta,lab_computo,Auditorio principal,,,manana
+U003,773767,user3@iteso.mx,55860288,docente,TK-3009,Reporte 9,El incidente afecta a varias personas del area.,instalaciones,en_proceso,media,estudios,Estacionamiento principal,,,manana
+U004,752153,user4@iteso.mx,99189718,docente,TK-3010,Reporte 10,El problema se presenta desde la semana pasada.,cosas_perdidas,en_proceso,baja,biblioteca,Cafeteria central,Cartera,encontrado,tarde_noche
+U004,752153,user4@iteso.mx,99189718,docente,TK-3011,Reporte 11,El fallo se detecto durante la clase.,cosas_perdidas,abierto,baja,administracion,Banos edificio A,Mochila,activo,manana
+U004,752153,user4@iteso.mx,99189718,docente,TK-3012,Reporte 12,Configuracion no se guardo correctamente.,instalaciones,cerrado,baja,estudios,Banos edificio A,,,tarde_noche
+U005,761925,user5@iteso.mx,93457733,estudiante,TK-3013,Reporte 13,Se requiere revision por parte de soporte.,cosas_perdidas,cerrado,alta,cafeteria,Cafeteria central,Mochila,encontrado,tarde_noche
+U005,761925,user5@iteso.mx,93457733,estudiante,TK-3014,Reporte 14,El problema se presenta desde la semana pasada.,cosas_perdidas,abierto,baja,cancha,Gimnasio principal,Llaves,encontrado,tarde_noche
+U005,761925,user5@iteso.mx,93457733,estudiante,TK-3015,Reporte 15,Validar posible riesgo de seguridad.,docentes,en_proceso,media,ingenierias,Centro de apoyo estudiantil,,,tarde_noche
+U006,757241,user6@iteso.mx,68351753,estudiante,TK-3016,Reporte 16,Se requiere revision por parte de soporte.,cosas_perdidas,cerrado,alta,negocios,Cancha techada,Cartera,activo,tarde_noche
+U006,757241,user6@iteso.mx,68351753,estudiante,TK-3017,Reporte 17,El problema se presenta desde la semana pasada.,instalaciones,abierto,alta,gimnasio,Laboratorio de computo,,,manana
+U006,757241,user6@iteso.mx,68351753,estudiante,TK-3018,Reporte 18,Se detecto comportamiento inusual en el sistema.,docentes,en_proceso,media,cafeteria,Laboratorio de quimica,,,tarde_noche
+U007,755619,user7@iteso.mx,16495096,docente,TK-3019,Reporte 19,Se necesita revision fisica del equipo.,cosas_perdidas,abierto,baja,lab_computo,Centro de medios,Cartera,activo,manana
+U007,755619,user7@iteso.mx,16495096,docente,TK-3020,Reporte 20,Se detecto comportamiento inusual en el sistema.,cosas_perdidas,abierto,media,taller_ingenieria,Auditorio principal,Mochila,encontrado,tarde_noche
+U007,755619,user7@iteso.mx,16495096,docente,TK-3021,Reporte 21,Se solicita atencion prioritaria al incidente.,instalaciones,abierto,alta,apoyo_estudiantil,Gimnasio principal,,,tarde_noche
+U008,753228,user8@iteso.mx,77380437,estudiante,TK-3022,Reporte 22,Se necesita revision fisica del equipo.,cosas_perdidas,cerrado,alta,auditorio,Salon multidisciplinario,Cartera,encontrado,tarde_noche
+U008,753228,user8@iteso.mx,77380437,estudiante,TK-3023,Reporte 23,Se sospecha un problema de conexion.,instalaciones,cerrado,media,ingenierias,Biblioteca central,,,manana
+U008,753228,user8@iteso.mx,77380437,estudiante,TK-3024,Reporte 24,El usuario no puede completar sus actividades.,cosas_perdidas,en_proceso,baja,lab_computo,Edificio ingenierias,Llaves,encontrado,tarde_noche
+U009,755254,user9@iteso.mx,01906315,docente,TK-3025,Reporte 25,El problema ocurre en mas de un dispositivo.,docentes,en_proceso,baja,estacionamiento,Centro de medios,,,tarde_noche
+U009,755254,user9@iteso.mx,01906315,docente,TK-3026,Reporte 26,La falla ocurre solo en ciertos horarios.,instalaciones,en_proceso,alta,estacionamiento,Taller de ingenieria,,,manana
+U009,755254,user9@iteso.mx,01906315,docente,TK-3027,Reporte 27,El fallo se detecto durante la clase.,docentes,abierto,media,auditorio,Gimnasio principal,,,tarde_noche
+U010,776883,user10@iteso.mx,30796353,docente,TK-3028,Reporte 28,Configuracion no se guardo correctamente.,instalaciones,cerrado,baja,lab_computo,Laboratorio de quimica,,,manana
+U010,776883,user10@iteso.mx,30796353,docente,TK-3029,Reporte 29,Configuracion no se guardo correctamente.,instalaciones,en_proceso,alta,estacionamiento,Salon multidisciplinario,,,tarde_noche
+U010,776883,user10@iteso.mx,30796353,docente,TK-3030,Reporte 30,El incidente afecta a varias personas del area.,docentes,cerrado,baja,auditorio,Edificio ingenierias,,,tarde_noche
+U011,768720,user11@iteso.mx,04498375,estudiante,TK-3031,Reporte 31,El incidente afecta a varias personas del area.,instalaciones,abierto,baja,biblioteca,Edificio ingenierias,,,manana
+U011,768720,user11@iteso.mx,04498375,estudiante,TK-3032,Reporte 32,Se detecto comportamiento inusual en el sistema.,docentes,en_proceso,alta,gimnasio,Sala de lectura,,,manana
+U011,768720,user11@iteso.mx,04498375,estudiante,TK-3033,Reporte 33,El equipo tarda demasiado en responder.,docentes,en_proceso,baja,taller_ingenieria,Edificio negocios,,,tarde_noche
+U012,777243,user12@iteso.mx,02460586,estudiante,TK-3034,Reporte 34,Error aparece despues de unos minutos de uso.,cosas_perdidas,abierto,media,cafeteria,Edificio humanidades,Cartera,encontrado,manana
+U012,777243,user12@iteso.mx,02460586,estudiante,TK-3035,Reporte 35,El problema se presenta desde la semana pasada.,docentes,cerrado,baja,apoyo_estudiantil,Taller de ingenieria,,,tarde_noche
+U012,777243,user12@iteso.mx,02460586,estudiante,TK-3036,Reporte 36,El fallo se detecto durante la clase.,cosas_perdidas,en_proceso,media,cancha,Taller de ingenieria,USB,encontrado,manana
+U013,759088,user13@iteso.mx,60811581,docente,TK-3037,Reporte 37,El fallo se detecto durante la clase.,instalaciones,cerrado,alta,cancha,Edificio ingenierias,,,tarde_noche
+U013,759088,user13@iteso.mx,60811581,docente,TK-3038,Reporte 38,El servicio funciona de forma intermitente.,docentes,en_proceso,baja,lab_computo,Cancha techada,,,tarde_noche
+U013,759088,user13@iteso.mx,60811581,docente,TK-3039,Reporte 39,El problema ocurre en mas de un dispositivo.,cosas_perdidas,cerrado,baja,auditorio,Edificio administrativo,Cartera,activo,manana
+U014,761251,user14@iteso.mx,30107653,docente,TK-3040,Reporte 40,Validar posible riesgo de seguridad.,cosas_perdidas,abierto,media,salon_multi,Centro de apoyo estudiantil,Cartera,activo,manana
+U014,761251,user14@iteso.mx,30107653,docente,TK-3041,Reporte 41,El problema ocurre en mas de un dispositivo.,instalaciones,cerrado,alta,banos,Edificio administrativo,,,manana
+U014,761251,user14@iteso.mx,30107653,docente,TK-3042,Reporte 42,Se solicita atencion prioritaria al incidente.,docentes,abierto,alta,salon_multi,Centro de medios,,,manana
+U015,752912,user15@iteso.mx,60441984,docente,TK-3043,Reporte 43,La falla ocurre solo en ciertos horarios.,docentes,abierto,alta,negocios,Biblioteca central,,,tarde_noche
+U015,752912,user15@iteso.mx,60441984,docente,TK-3044,Reporte 44,Se solicita atencion prioritaria al incidente.,cosas_perdidas,en_proceso,alta,estudios,Centro de medios,Guantes,activo,tarde_noche
+U015,752912,user15@iteso.mx,60441984,docente,TK-3045,Reporte 45,La falla ocurre solo en ciertos horarios.,cosas_perdidas,abierto,alta,gimnasio,Cancha techada,Guantes,encontrado,tarde_noche
+U016,772575,user16@iteso.mx,18910342,estudiante,TK-3046,Reporte 46,Impide uso normal del espacio.,cosas_perdidas,cerrado,alta,lab_quimica,Edificio administrativo,Guantes,encontrado,manana
+U016,772575,user16@iteso.mx,18910342,estudiante,TK-3047,Reporte 47,Situacion reportada previamente sin solucion.,docentes,en_proceso,media,lab_computo,Estacionamiento principal,,,tarde_noche
+U016,772575,user16@iteso.mx,18910342,estudiante,TK-3048,Reporte 48,El fallo se detecto durante la clase.,instalaciones,abierto,media,taller_ingenieria,Edificio administrativo,,,tarde_noche
+U017,752324,user17@iteso.mx,73195110,estudiante,TK-3049,Reporte 49,El equipo deja de responder aleatoriamente.,instalaciones,cerrado,media,taller_ingenieria,Cancha techada,,,manana
+U017,752324,user17@iteso.mx,73195110,estudiante,TK-3050,Reporte 50,El usuario no puede completar sus actividades.,cosas_perdidas,en_proceso,media,administracion,Laboratorio de computo,USB,activo,tarde_noche
+U017,752324,user17@iteso.mx,73195110,estudiante,TK-3051,Reporte 51,El equipo tarda demasiado en responder.,docentes,abierto,baja,domo,Taller de ingenieria,,,manana
+U018,755618,user18@iteso.mx,71879028,estudiante,TK-3052,Reporte 52,Validar posible riesgo de seguridad.,instalaciones,cerrado,alta,ingenierias,Biblioteca central,,,manana
+U018,755618,user18@iteso.mx,71879028,estudiante,TK-3053,Reporte 53,Se necesita revision fisica del equipo.,cosas_perdidas,en_proceso,baja,taller_ingenieria,Edificio ingenierias,Llaves,activo,manana
+U018,755618,user18@iteso.mx,71879028,estudiante,TK-3054,Reporte 54,El servicio funciona de forma intermitente.,cosas_perdidas,cerrado,baja,auditorio,Edificio humanidades,Llaves,activo,manana
+U019,769827,user19@iteso.mx,53139112,docente,TK-3055,Reporte 55,Se necesita revision fisica del equipo.,instalaciones,cerrado,media,salon_multi,Sala de lectura,,,manana
+U019,769827,user19@iteso.mx,53139112,docente,TK-3056,Reporte 56,Situacion reportada previamente sin solucion.,cosas_perdidas,cerrado,baja,lab_quimica,Auditorio principal,Llaves,encontrado,tarde_noche
+U019,769827,user19@iteso.mx,53139112,docente,TK-3057,Reporte 57,El incidente afecta a varias personas del area.,docentes,en_proceso,baja,banos,Edificio humanidades,,,tarde_noche
+U020,772659,user20@iteso.mx,27879445,docente,TK-3058,Reporte 58,Impide uso normal del espacio.,cosas_perdidas,en_proceso,alta,apoyo_estudiantil,Edificio negocios,Guantes,encontrado,tarde_noche
+U020,772659,user20@iteso.mx,27879445,docente,TK-3059,Reporte 59,Error aparece despues de unos minutos de uso.,cosas_perdidas,en_proceso,alta,cafeteria,Edificio ingenierias,Llaves,activo,manana
+U020,772659,user20@iteso.mx,27879445,docente,TK-3060,Reporte 60,Se detecto comportamiento inusual en el sistema.,instalaciones,cerrado,alta,apoyo_estudiantil,Laboratorio de quimica,,,manana
