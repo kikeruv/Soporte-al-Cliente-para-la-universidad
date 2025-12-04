@@ -288,7 +288,7 @@ def populate_cassandra():
     insert_instalacion = session.prepare(
         """
         INSERT INTO tickets_por_instalacion_fechas
-        (install_id, fecha, ticket_id, categoria, estado, prioridad)
+        (install_id, fecha, ticket_id, categoria, estado, prioridad, descripcion)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """
     )
