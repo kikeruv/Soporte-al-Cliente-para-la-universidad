@@ -55,9 +55,7 @@ def get_cassandra_session():
 
     _session = session
     return _session
-##################################################
-
-##################################################
+#
 # Config de Mongo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mongo")
@@ -65,9 +63,7 @@ logger = logging.getLogger("mongo")
 # Initialize MongoDB client and database
 client = MongoClient('mongodb://localhost:27017/')
 db = client.Soporte
-################################################
 
-################################################
 # Config de DGraph
 DGRAPH_URI = os.getenv('DGRAPH_URI', 'localhost:9080')
 

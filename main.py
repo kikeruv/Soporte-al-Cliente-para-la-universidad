@@ -24,8 +24,6 @@ import populate
 import json
 import pydgraph
 
-
-# Helper para asegurar que el esquema de Cassandra se cree solo una vez
 _cassandra_session = None
 _cassandra_schema_creada = False
 
@@ -128,11 +126,7 @@ def menu_dgraph():
 
 
 def borrar_datos():
-    """
-    Borra todos los datos de Mongo (users, tickets)
-    todas las tablas de Cassandra del keyspace de proyecto
-    y todo el contenido de Dgraph.
-    """
+
     print(
         "\nADVERTENCIA: Esta opcion borrara TODOS los datos "
         "en Mongo (users, tickets) y Cassandra (tablas de proyecto)."
@@ -191,15 +185,13 @@ def borrar_datos():
                 pass
 
 
-##### Submenus por tipo de reporte #####
 def menu_instalaciones():
-    # Usaremos Mongo y Cassandra relacionados con instalaciones
     session = get_cassandra_session_con_schema()
     if session is None:
         return
 
     while True:
-        print("\n=== Instalaciones M y C ===")
+        print("\n=== Instalaciones MC ===")
         print("1. Instalaciones con mas incidencias M")
         print("2. tickets_por_instalacion_fechas C")
         print("3. tickets_por_instalaciones C")
@@ -254,13 +246,12 @@ def menu_cosas_perdidas():
 
 
 def menu_tickets():
-    # Mezcla de reportes de tickets en Mongo y Cassandra
     session = get_cassandra_session_con_schema()
     if session is None:
         return
 
     while True:
-        print("\n=== Tickets M + C ===")
+        print("\n=== Tickets MC ===")
         print("1. Total de tickets por categoria M")
         print("2. Total de tickets por estado M")
         print("3. Titulos que empiezan con 'Falla' o 'Dano' M")
@@ -318,15 +309,14 @@ def menu_tickets():
 
 
 def menu_docentes():
-    # Reportes academicos / docentes en Cassandra
     session = get_cassandra_session_con_schema()
     if session is None:
         return
 
     while True:
         print("\n=== Docentes / reportes academicos C ===")
-        print("1. tickets_por_profesor (Cassandra)")
-        print("2. tickets_por_rol (Cassandra)")
+        print("1. tickets_por_profesor C")
+        print("2. tickets_por_rol C")
         print("0. Volver al menu principal")
 
         try:
@@ -338,7 +328,6 @@ def menu_docentes():
         if op == 0:
             break
         elif op == 1:
-            # Listar docentes desde Mongo para que el profesor se identifique
             docentes = list(
                 db.users.find(
                     {"role": "docente"},
@@ -380,16 +369,15 @@ def menu_docentes():
 
 
 def menu_usuarios():
-    # Usuarios en Mongo y actividad en Cassandra
     session = get_cassandra_session_con_schema()
     if session is None:
         return
 
     while True:
-        print("\n=== Usuarios M + C ===")
+        print("\n=== Usuarios MC ===")
         print("1. Mostrar todos los usuarios M")
-        print("2. historial_por_usuario (Cassandra)")
-        print("3. tickets_por_usuario_dia (Cassandra)")
+        print("2. historial_por_usuario C")
+        print("3. tickets_por_usuario_dia C")
         print("0. Volver al menu principal")
 
         try:
@@ -417,14 +405,14 @@ def menu_usuarios():
 def print_menu_principal():
     print("\n=== Sistema Soporte ITESO - Menu Principal ===")
     print("1. Cosas perdidas M")
-    print("2. Instalaciones M + C")
+    print("2. Instalaciones MC")
     print("3. Docentes / reportes academicos C")
-    print("4. Tickets M + C")
-    print("5. Usuarios M + C")
-    print("6. Probar conexiones M + C + D")
-    print("7. Ejecutar populate M + C+ D")
-    print("8. Borrar TODOS los datos M + C")
-    print("9. Reportes en Dgraph (grafo) D")
+    print("4. Tickets MC")
+    print("5. Usuarios MC")
+    print("6. Probar conexiones MCD")
+    print("7. Ejecutar populate MCD")
+    print("8. Borrar TODOS los datos MCD")
+    print("9. Reportes D")
     print("0. Salir")
 
 
@@ -458,7 +446,7 @@ def main():
         elif opcion == 6:
             test_connections()
         elif opcion == 7:
-            print("\nEjecutando populate de M + C + D\n")
+            print("\nEjecutando populate de MCD\n")
             populate.main()
             print()
         elif opcion == 8:

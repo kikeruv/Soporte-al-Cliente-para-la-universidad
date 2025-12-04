@@ -256,7 +256,6 @@ def populate_cassandra():
     for nombre in tablas:
         session.execute(f"TRUNCATE {nombre}")
 
-    # Preparar sentencias normales
     insert_alerta = session.prepare(
         """
         INSERT INTO alertas_tickets_vencidos
@@ -328,7 +327,6 @@ def populate_cassandra():
         """
     )
 
-    # Sentencias para counters
     update_cat_dia = session.prepare(
         """
         UPDATE conteo_tickets_por_categoria_dia
@@ -465,7 +463,7 @@ def populate_cassandra():
         # 11) tickets_por_prioridad 
         session.execute(update_prioridad, (prioridad,))
 
-        # 12) tickets_por_instalaciones (usamos installation_id como instalacion)
+        # 12) tickets_por_instalaciones 
         instalacion = install_id
         session.execute(
             insert_instalaciones,
