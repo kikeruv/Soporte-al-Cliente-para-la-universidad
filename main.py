@@ -18,7 +18,7 @@ from Mongo.client import (
     mostrar_usuarios,
 )
 from Cassandra import model as cass_model
-
+from Dgraph import client as dgraph_client  #Utilizamos la las funciones de client.py
 import populate
 import json
 
@@ -82,119 +82,23 @@ def test_connections():
             except Exception:
                 pass
 
-
-##### Consultas a Dgraph #####
-
-
-def dgraph_usuarios_y_tickets():
-    """
-    Muestra los usuarios en Dgraph y cuantos tickets tiene cada uno.
-    """
-    print("\n=== Dgraph: Usuarios y sus tickets ===")
-
-    stub = None
-    try:
-        stub = create_client_stub()
-        client = create_client(stub)
-
-        query = """
-        {
-          usuarios(func: type(Usuario)) {
-            user_id
-            email
-            rol
-            total_tickets: count(~creado_por)
-          }
-        }
-        """
-
-        txn = client.txn(read_only=True)
-        res = txn.query(query)
-        data = json.loads(res.json)
-
-        usuarios = data.get("usuarios", [])
-        if not usuarios:
-            print("No se encontraron usuarios en Dgraph.")
-            return
-
-        for u in usuarios:
-            print("- user_id:", u.get("user_id"))
-            print("  email:", u.get("email"))
-            print("  rol:", u.get("rol"))
-            print("  total_tickets:", u.get("total_tickets", 0))
-            print()
-
-    except Exception as e:
-        print("Error al consultar Dgraph:", e)
-    finally:
-        if stub is not None:
-            try:
-                close_client_stub(stub)
-            except Exception:
-                pass
-
-
-def dgraph_instalaciones_y_tickets():
-    """
-    Muestra las instalaciones en Dgraph y los tickets asociados.
-    """
-    print("\n=== Dgraph: Instalaciones y sus tickets ===")
-
-    stub = None
-    try:
-        stub = create_client_stub()
-        client = create_client(stub)
-
-        query = """
-        {
-          instalaciones(func: type(Instalacion)) {
-            instal_id
-            instal_nombre
-            tickets: ~afecta {
-              ticket_id
-              titulo
-              estado
-            }
-          }
-        }
-        """
-
-        txn = client.txn(read_only=True)
-        res = txn.query(query)
-        data = json.loads(res.json)
-
-        instalaciones = data.get("instalaciones", [])
-        if not instalaciones:
-            print("No se encontraron instalaciones en Dgraph.")
-            return
-
-        for inst in instalaciones:
-            print("- instal_id:", inst.get("instal_id"))
-            print("  nombre:", inst.get("instal_nombre"))
-            tickets = inst.get("tickets", [])
-            print("  total_tickets:", len(tickets))
-            for t in tickets:
-                print("    *", t.get("ticket_id"), "-", t.get("titulo"), f"({t.get('estado')})")
-            print()
-
-    except Exception as e:
-        print("Error al consultar Dgraph:", e)
-    finally:
-        if stub is not None:
-            try:
-                close_client_stub(stub)
-            except Exception:
-                pass
+#####Sub menu Dgraph con 4 requerimientos###
 
 
 def menu_dgraph():
     """
-    Submenu para consultas en Dgraph.
+    Submenu para consultas de los requerimientos 1, 2,6 y 11
+    1) Relación usuario–ticket
+    2) Historial usuario–instalación
+    3) Tickets relacionados por contexto
+    4) Conexión entre usuarios y horarios de reporte
     """
     while True:
-        print("\n=== Reportes en Dgraph (grafo) ===")
-        print("1. Usuarios y cantidad de tickets")
-        print("2. Instalaciones y sus tickets")
+        print("\n=== Reportes en Dgraph ===")
+        print("1. Relacion usuario-ticket")
+        print("2. Historial de interacciones usuario–instalacion")
+        print("3. Tickets relacionados por contexto")
+        print("4. Conexion entre usuarios y horario de reporte")
         print("0. Volver al menu principal")
 
         try:
@@ -206,9 +110,17 @@ def menu_dgraph():
         if op == 0:
             break
         elif op == 1:
-            dgraph_usuarios_y_tickets()
+           # Requerimiento 1: Relación usuario–ticket
+            dgraph_client.reporte_usuario_ticket()
         elif op == 2:
-            dgraph_instalaciones_y_tickets()
+            # Requerimiento 3: Historial de interacciones usuario–instalación
+            dgraph_client.historial_usuario_instalacion()
+        elif op == 3:
+            # Requerimiento 6: Tickets relacionados por contexto (categoria / tipo)
+            dgraph_client.tickets_relacionados_por_contexto()
+        elif op == 4:
+            # Requerimiento 11: Conexion entre usuarios y horarios de reporte
+            dgraph_client.conexion_usuarios_horarios()
         else:
             print("Opcion no valida.")
 
@@ -488,7 +400,7 @@ def print_menu_principal():
     print("4. Tickets M + C")
     print("5. Usuarios M + C")
     print("6. Probar conexiones M + C + D")
-    print("7. Ejecutar populate M + C")
+    print("7. Ejecutar populate M + C+ D")
     print("8. Borrar TODOS los datos M + C")
     print("9. Reportes en Dgraph (grafo) D")
     print("0. Salir")

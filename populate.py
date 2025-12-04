@@ -288,7 +288,7 @@ def populate_cassandra():
     insert_instalacion = session.prepare(
         """
         INSERT INTO tickets_por_instalacion_fechas
-        (install_id, fecha, ticket_id, categoria, estado, prioridad, descripcion)
+        (install_id, fecha, ticket_id, categoria, estado, prioridad)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """
     )
@@ -485,7 +485,7 @@ def populate_cassandra():
 def populate_dgraph():
     """
     Llena Dgraph usando los tickets que ya estan en Mongo
-    Crea nodos usuario, instalacion y ticket y relaciones creo y afecta.
+    Crea nodos/relaciones segun el esquema RDF del doc.
     """
    
     print("=== Populate Dgraph ===")
@@ -494,30 +494,59 @@ def populate_dgraph():
     stub = create_client_stub()
     client = create_client(stub)
 
-    # 1) Definimos esquema simple
+    # 1) Esquema RDF para los 4 requerimientos
     schema = """
     user_id: string @index(exact) .
+    nombre: string @index(term) .
     email: string @index(exact) .
     rol: string @index(exact) .
+    expediente: string @index(exact) .
+    creo: [uid] @reverse .
 
     ticket_id: string @index(exact) .
-    titulo: string @index(term) .
+    titulo: string @index(fulltext) .
     descripcion: string @index(fulltext) .
-    estado: string @index(exact) .
+    estado: string  @index(exact) .
     prioridad: string @index(exact) .
+    fecha_creacion: datetime @index(hour) .
     categoria: string @index(exact) .
-    fecha_creacion: datetime .
+    afecta: uid @reverse .
+    tipo: uid .
+    pertenece_a_categoria: uid .
+    reporta_en: uid @reverse .
+    contiene: [uid] .
 
     instal_id: string @index(exact) .
-    instal_nombre: string .
+    tipo_instalacion: string @index(exact) .
+    ubicacion: string .
 
-    creado_por: uid @reverse .
-    afecta: uid @reverse .
+    dept_id: string @index(exact) .
+    edificio: string .
+
+    tipo_id: string @index(exact) .
+
+    categoria_id: string @index(exact) .
+
+    palabra: string @index(exact, term) .
+
+    agente_id: string @index(exact) .
+
+    periodo_id: string @index(exact) .
+    fecha_inicio: datetime .
+    fecha_fin: datetime .
+
+    horario_id: string @index(exact) .
+    hora_inicio: string .
+    hora_fin: string .
+    periodo: string @index(exact) .
 
     type Usuario {
       user_id
+      nombre
       email
       rol
+      expediente
+      creo
     }
 
     type Ticket {
@@ -526,15 +555,44 @@ def populate_dgraph():
       descripcion
       estado
       prioridad
-      categoria
       fecha_creacion
-      creado_por
       afecta
+      tipo
+      pertenece_a_categoria
+      asignado_a
+      escalado_a
+      ocurre_en
+      reporta_en
+      contiene
     }
 
     type Instalacion {
       instal_id
-      instal_nombre
+      nombre
+      tipo_instalacion
+      ubicacion
+    }
+
+    type TipoProblema {
+      tipo_id
+      descripcion
+    }
+
+    type Categoria {
+      categoria_id
+      nombre
+      descripcion
+    }
+
+    type PalabraClave {
+      palabra
+    }
+
+    type Horario {
+      horario_id
+      hora_inicio
+      hora_fin
+      periodo
     }
     """
 
@@ -542,69 +600,296 @@ def populate_dgraph():
     client.alter(op)
 
     # 2) Leer datos de Mongo
-    usuarios = list(db.users.find())
-    tickets = list(db.tickets.find())
+    usuarios_db = list(db.users.find())
+    tickets_db = list(db.tickets.find())
 
     objetos = []
 
-    # 3) Crear nodos de Usuario
-    for u in usuarios:
+    # ---------- Departamentos ----------
+    departamentos_info = [
+        {
+            "dept_id": "DESI",
+            "nombre": "Departamento de Electronica, Sistemas e Informatica",
+            "edificio": "Edificio J",
+        },
+        {
+            "dept_id": "DECS",
+            "nombre": "Departamento de Ciencias Sociales",
+            "edificio": "Edificio H",
+        },
+        {
+            "dept_id": "DEAM",
+            "nombre": "Departamento de Administracion y Finanzas",
+            "edificio": "Edificio A",
+        },
+        {
+            "dept_id": "DEGN",
+            "nombre": "Departamento de Negocios",
+            "edificio": "Edificio N",
+        },
+    ]
+
+    dept_map = {}
+    for d in departamentos_info:
+        uid = f"_:dep_{d['dept_id']}"
+        dept_map[d["dept_id"]] = uid
+        obj = {
+            "uid": uid,
+            "dgraph.type": "Departamento",
+            "dept_id": d["dept_id"],
+            "nombre": d["nombre"],
+            "edificio": d["edificio"],
+        }
+        objetos.append(obj)
+
+    # ---------- Agentes ----------
+    agentes_info = [
+        {"agente_id": "AG-001", "nombre": "Agente Soporte 1", "email": "agente1@iteso.mx", "dept_id": "DESI"},
+        {"agente_id": "AG-002", "nombre": "Agente Soporte 2", "email": "agente2@iteso.mx", "dept_id": "DESI"},
+        {"agente_id": "AG-003", "nombre": "Agente Soporte 3", "email": "agente3@iteso.mx", "dept_id": "DEGN"},
+    ]
+
+    agente_map = {}
+    for a in agentes_info:
+        uid = f"_:ag_{a['agente_id']}"
+        agente_map[a["agente_id"]] = uid
+        obj = {
+            "uid": uid,
+            "dgraph.type": "Agente",
+            "agente_id": a["agente_id"],
+            "nombre": a["nombre"],
+            "email": a["email"],
+        }
+        dep_uid = dept_map.get(a["dept_id"])
+        if dep_uid:
+            obj["departamento"] = {"uid": dep_uid}
+        objetos.append(obj)
+
+    # ---------- Periodos temporales (meses 2025-09,10,11) ----------
+    periodos_info = {
+        9: {
+            "periodo_id": "P-2025-09",
+            "descripcion": "Septiembre 2025",
+            "fecha_inicio": datetime(2025, 9, 1),
+            "fecha_fin": datetime(2025, 9, 30),
+        },
+        10: {
+            "periodo_id": "P-2025-10",
+            "descripcion": "Octubre 2025",
+            "fecha_inicio": datetime(2025, 10, 1),
+            "fecha_fin": datetime(2025, 10, 31),
+        },
+        11: {
+            "periodo_id": "P-2025-11",
+            "descripcion": "Noviembre 2025",
+            "fecha_inicio": datetime(2025, 11, 1),
+            "fecha_fin": datetime(2025, 11, 30),
+        },
+    }
+
+    periodo_map = {}
+    for month, info in periodos_info.items():
+        uid = f"_:per_{info['periodo_id']}"
+        periodo_map[month] = uid
+        objetos.append(
+            {
+                "uid": uid,
+                "dgraph.type": "PeriodoTemporal",
+                "periodo_id": info["periodo_id"],
+                "descripcion": info["descripcion"],
+                "fecha_inicio": info["fecha_inicio"].isoformat(),
+                "fecha_fin": info["fecha_fin"].isoformat(),
+            }
+        )
+
+    # ---------- Horarios ----------
+    horarios_info = {
+        "manana": {
+            "horario_id": "H-MANANA",
+            "hora_inicio": "07:00",
+            "hora_fin": "14:59",
+            "periodo": "manana",
+        },
+        "tarde_noche": {
+            "horario_id": "H-TARDE-NOCHE",
+            "hora_inicio": "15:00",
+            "hora_fin": "22:00",
+            "periodo": "tarde_noche",
+        },
+    }
+
+    horario_map = {}
+    for key, info in horarios_info.items():
+        uid = f"_:hor_{key}"
+        horario_map[key] = uid
+        objetos.append(
+            {
+                "uid": uid,
+                "dgraph.type": "Horario",
+                "horario_id": info["horario_id"],
+                "hora_inicio": info["hora_inicio"],
+                "hora_fin": info["hora_fin"],
+                "periodo": info["periodo"],
+            }
+        )
+
+    # ---------- Tipos de problema ----------
+    tipos_info = [
+        {"tipo_id": "TP-01", "descripcion": "Falla electrica"},
+        {"tipo_id": "TP-02", "descripcion": "Problema con equipo/docente"},
+        {"tipo_id": "TP-03", "descripcion": "Perdida de objeto"},
+    ]
+
+    tipo_map = {}
+    for tinfo in tipos_info:
+        uid = f"_:tp_{tinfo['tipo_id']}"
+        tipo_map[tinfo["tipo_id"]] = uid
+        objetos.append(
+            {
+                "uid": uid,
+                "dgraph.type": "TipoProblema",
+                "tipo_id": tinfo["tipo_id"],
+                "descripcion": tinfo["descripcion"],
+            }
+        )
+
+    # ---------- Categorias ----------
+    categorias_nombres = sorted(
+        {t.get("category") for t in tickets_db if t.get("category")}
+    )
+    categoria_map = {}
+    cat_index = 1
+    for nombre_cat in categorias_nombres:
+        cat_id = f"CAT-{cat_index:02d}"
+        uid = f"_:cat_{nombre_cat}"
+        categoria_map[nombre_cat] = uid
+        objetos.append(
+            {
+                "uid": uid,
+                "dgraph.type": "Categoria",
+                "categoria_id": cat_id,
+                "nombre": nombre_cat,
+                "descripcion": f"Tickets de categoria {nombre_cat}",
+            }
+        )
+        cat_index += 1
+
+    # ---------- Instalaciones ----------
+    instalaciones_vistas = {}
+    for t in tickets_db:
+        inst_id = t.get("installation_id")
+        nombre = t.get("place_name") or inst_id
+        if inst_id and inst_id not in instalaciones_vistas:
+            instalaciones_vistas[inst_id] = nombre
+
+    instal_map = {}
+    for inst_id, nombre in instalaciones_vistas.items():
+        uid = f"_:inst_{inst_id}"
+        instal_map[inst_id] = uid
+        objetos.append(
+            {
+                "uid": uid,
+                "dgraph.type": "Instalacion",
+                "instal_id": inst_id,
+                "nombre": nombre,
+                "tipo_instalacion": "instalacion",
+                "ubicacion": "Campus ITESO",
+            }
+        )
+
+    # ---------- Usuarios ----------
+    usuarios_map = {}
+    for u in usuarios_db:
+        uid = f"_:u_{u.get('user_id')}"
         user_id = u.get("user_id")
         if not user_id:
             continue
+        expediente = str(u.get("expediente", ""))
+        rol = u.get("role", "")
+        email = u.get("email", "")
 
-        obj = {
-            "uid": f"_:u_{user_id}",
+        # Asignar departamento aleatorio
+        dept_id_random = random.choice(list(dept_map.keys()))
+        dep_uid = {"uid": dept_map[dept_id_random]} if dept_id_random else None
+
+        user_obj = {
+            "uid": uid,
             "dgraph.type": "Usuario",
             "user_id": user_id,
+            "nombre": f"Usuario {user_id}",
+            "email": email,
+            "rol": rol,
+            "expediente": expediente,
+            "creo": [],  # se llenara con los tickets
         }
+        if dep_uid:
+            user_obj["departamento"] = dep_uid
 
-        email = u.get("email")
-        if email:
-            obj["email"] = email
+        usuarios_map[user_id] = user_obj
+        objetos.append(user_obj)
 
-        rol = u.get("role")
-        if rol:
-            obj["rol"] = rol
+    # ---------- Palabras clave ----------
+    palabra_map = {}
 
-        objetos.append(obj)
+    def normalizar_palabra(w: str) -> str:
+        return w.lower().strip(".,;:¡!¿?()[]{}\"'")
 
-    # 4) Crear nodos de Instalacion (a partir de tickets)
-    instalaciones_vistas = set()
+    stopwords = {
+        "el",
+        "la",
+        "los",
+        "las",
+        "un",
+        "una",
+        "unos",
+        "unas",
+        "de",
+        "del",
+        "en",
+        "y",
+        "o",
+        "por",
+        "para",
+        "con",
+        "al",
+        "se",
+        "lo",
+        "que",
+        "es",
+        "esta",
+        "este",
+        "son",
+    }
 
-    for t in tickets:
-        instal_id = t.get("installation_id")
-        if not instal_id:
-            continue
-        if instal_id in instalaciones_vistas:
-            continue
-
-        instalaciones_vistas.add(instal_id)
-
-        obj = {
-            "uid": f"_:i_{instal_id}",
-            "dgraph.type": "Instalacion",
-            "instal_id": instal_id,
-            "instal_nombre": instal_id,
-        }
-        objetos.append(obj)
-
-    # 5) Crear nodos de Ticket y relaciones
-    ahora = datetime.utcnow()
-
-    for t in tickets:
+    # ---------- Tickets ----------
+    for t in tickets_db:
         ticket_id = t.get("ticket_id")
         if not ticket_id:
             continue
 
-        creado = t.get("created_at") or ahora
-        if isinstance(creado, datetime):
-            fecha_str = creado.isoformat()
+        # Reusar la misma logica de fechas que Cassandra: 2025-09,10,11
+        try:
+            num = int(ticket_id.split("-")[1])
+        except (IndexError, ValueError):
+            num = random.randint(3000, 4000)
+
+        mod = num % 3
+        if mod == 0:
+            month = 9
+        elif mod == 1:
+            month = 10
         else:
-            fecha_str = str(creado)
+            month = 11
+
+        day = (num % 28) + 1
+        hour = 8 + (num % 10)
+        created_at = datetime(2025, month, day, hour, 0, 0)
+        fecha_str = created_at.isoformat()
+
+        ticket_uid = f"_:t_{ticket_id}"
 
         ticket_obj = {
-            "uid": f"_:t_{ticket_id}",
+            "uid": ticket_uid,
             "dgraph.type": "Ticket",
             "ticket_id": ticket_id,
             "titulo": t.get("title", ""),
@@ -612,20 +897,89 @@ def populate_dgraph():
             "estado": t.get("status", ""),
             "prioridad": t.get("priority", ""),
             "fecha_creacion": fecha_str,
-            "categoria": t.get("category", ""), 
         }
-        # Relacion creado_po usuario
+
+        # afecta -> Instalacion
+        inst_id = t.get("installation_id")
+        if inst_id and inst_id in instal_map:
+            ticket_obj["afecta"] = {"uid": instal_map[inst_id]}
+
+        # pertenece_a_categoria
+        categoria_nombre = t.get("category")
+        if categoria_nombre:
+            ticket_obj["categoria"] = categoria_nombre 
+
+        if categoria_nombre and categoria_nombre in categoria_map:
+            ticket_obj["pertenece_a_categoria"] = {"uid": categoria_map[categoria_nombre]}
+       
+
+        # tipo -> TipoProblema (simple mapeo por categoria)
+        if categoria_nombre == "instalaciones":
+            tipo_id = "TP-01"
+        elif categoria_nombre == "docentes":
+            tipo_id = "TP-02"
+        else:
+            tipo_id = "TP-03"
+        ticket_obj["tipo"] = {"uid": tipo_map[tipo_id]}
+
+        # asignado_a -> Agente (aleatorio)
+        agente_id = random.choice(list(agente_map.keys()))
+        ticket_obj["asignado_a"] = {"uid": agente_map[agente_id]}
+
+        # escalado_a -> Departamento (por ejemplo, solo prioridad alta)
+        if t.get("priority") == "alta":
+            ticket_obj["escalado_a"] = {"uid": dept_map["DESI"]}
+
+        # ocurre_en -> PeriodoTemporal (segun mes)
+        periodo_uid = periodo_map.get(month)
+        if periodo_uid:
+            ticket_obj["ocurre_en"] = {"uid": periodo_uid}
+
+        # reporta_en -> Horario (segun turno o hora)
+        turno = t.get("turno")
+        if not turno:
+            turno = "manana" if hour < 15 else "tarde_noche"
+        if turno not in horario_map:
+            turno = "manana"
+        ticket_obj["reporta_en"] = {"uid": horario_map[turno]}
+
+        # contiene -> PalabraClave (a partir de titulo + descripcion)
+        palabras_ticket = []
+        texto = (t.get("title", "") + " " + t.get("description", "")).split()
+        for raw in texto:
+            w = normalizar_palabra(raw)
+            if not w or len(w) < 4 or w in stopwords:
+                continue
+            palabras_ticket.append(w)
+
+        # Palabras distintas, max 5 por ticket
+        palabras_ticket = list(dict.fromkeys(palabras_ticket))[:5]
+
+        contiene_uids = []
+        for w in palabras_ticket:
+            if w not in palabra_map:
+                p_uid = f"_:pal_{w}"
+                palabra_map[w] = p_uid
+                objetos.append(
+                    {
+                        "uid": p_uid,
+                        "dgraph.type": "PalabraClave",
+                        "palabra": w,
+                    }
+                )
+            contiene_uids.append({"uid": palabra_map[w]})
+
+        if contiene_uids:
+            ticket_obj["contiene"] = contiene_uids
+
+        # relacion creo: Usuario -> Ticket
         user_id = t.get("user_id")
-        if user_id:
-            ticket_obj["creado_por"] = {"uid": f"_:u_{user_id}"}
-    #Relacion afecta instalacion
-        instal_id = t.get("installation_id")
-        if instal_id:
-            ticket_obj["afecta"] = {"uid": f"_:i_{instal_id}"}
+        if user_id and user_id in usuarios_map:
+            usuarios_map[user_id].setdefault("creo", []).append({"uid": ticket_uid})
 
         objetos.append(ticket_obj)
 
-        # 6) Enviar todo a Dgraph en una sola mutacion JSON
+    # 3) Enviar todo a Dgraph en una sola mutacion JSON
     if objetos:
         txn = client.txn()
         try:
@@ -643,6 +997,8 @@ def populate_dgraph():
     close_client_stub(stub)
     print("Populate Dgraph: completado.")
 
+
+   
     
 
 

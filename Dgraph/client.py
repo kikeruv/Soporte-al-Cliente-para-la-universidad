@@ -23,165 +23,131 @@ def get_client():
 # 1) Relacion usuario-ticket
 #    Requerimiento: saber quien creó cada ticket y listar todos los tickets de un usuario.
 def reporte_usuario_ticket():
+    user_id = input('user_id (ej. "U-001", vacío = todos): ').strip()
+
     client, stub = get_client()
     try:
-        query = """
-        {
-          usuarios(func: has(user_id)) {
-            user_id
-            email
-            rol
-            tickets: ~creado_por {
-              ticket_id
-              titulo
-              estado
-              categoria
+        if user_id:
+            base_query = """
+            {
+              usuario(func: eq(user_id, "__USER__")) @filter(type(Usuario)) {
+                nombre
+                email
+                user_id
+                creo {
+                  ticket_id
+                  titulo
+                  estado
+                  fecha_creacion
+                }
+              }
             }
-          }
-        }
-        """
+            """
+            query = base_query.replace("__USER__", user_id)
+        else:
+            query = """
+            {
+              usuario(func: type(Usuario)) {
+                nombre
+                email
+                user_id
+                creo {
+                  ticket_id
+                  titulo
+                  estado
+                  fecha_creacion
+                }
+              }
+            }
+            """
+
         txn = client.txn(read_only=True)
         res = txn.query(query)
         data = json.loads(res.json)
-        usuarios = data.get("usuarios", [])
 
-        print("\n=== Relacion usuario - tickets creados ===")
+        usuarios = data.get("usuario", [])
+
+        print("\n=== Relación usuario–ticket (creó) ===")
         if not usuarios:
             print("No se encontraron usuarios en Dgraph.")
             return
 
         for u in usuarios:
-            print(f"\nUsuario: {u.get('user_id')} | {u.get('email')} | rol: {u.get('rol')}")
-            tickets = u.get("tickets", [])
+            print(f"\nUsuario: {u.get('user_id')} | {u.get('nombre')} | {u.get('email')}")
+            tickets = u.get("creo", [])
             if not tickets:
                 print("  (Sin tickets creados)")
                 continue
             for t in tickets:
                 print(
                     f"  - {t.get('ticket_id')} | {t.get('titulo')} | "
-                    f"estado: {t.get('estado')} | categoria: {t.get('categoria')}"
+                    f"estado: {t.get('estado')} | fecha: {t.get('fecha_creacion')}"
                 )
     finally:
         close_client_stub(stub)
-
-
-# 2) Deteccion de tickets duplicados 
-#    Requerimiento: tickets similares por palabras clave en el titulo.
-def detectar_tickets_duplicados():
-    palabra = input("Palabra clave para buscar tickets similares: ").strip()
-    if not palabra:
-        print("No se ingreso ninguna palabra.")
+   
+# 2) Historial de interacciones usuario - instalacion
+#    Requerimiento: usuarios que reportan frecuentemente en las mismas instalaciones.
+def historial_usuario_instalacion():
+    user_id = input('user_id (ej. "U-001"): ').strip()
+    if not user_id:
+        print("Se requiere un user_id.")
         return
 
     client, stub = get_client()
     try:
-        query = f"""
-        {{
-          tickets(func: anyofterms(titulo, "{palabra}")) {{
-            ticket_id
-            titulo
-            categoria
-            estado
-          }}
-        }}
-        """
-        txn = client.txn(read_only=True)
-        res = txn.query(query)
-        data = json.loads(res.json)
-        tickets = data.get("tickets", [])
-
-        print(f"\n=== Tickets que contienen la palabra '{palabra}' en el titulo ===")
-        if not tickets:
-            print("No se encontraron tickets.")
-            return
-
-        for t in tickets:
-            print(
-                f"- {t.get('ticket_id')} | {t.get('titulo')} | "
-                f"categoria: {t.get('categoria')} | estado: {t.get('estado')}"
-            )
-
-        print(
-            "\nNota: Tickets que comparten varias palabras clave en el titulo "
-            "pueden considerarse potencialmente duplicados."
-        )
-    finally:
-        close_client_stub(stub)
-
-
-# 3) Historial de interacciones usuario - instalacion
-#    Requerimiento: usuarios que reportan frecuentemente en las mismas instalaciones.
-def historial_usuario_instalacion():
-    client, stub = get_client()
-    try:
-        query = """
+        base_query = """
         {
-          instalaciones(func: has(instal_id)) {
-            instal_id
-            instal_nombre
-            tickets: ~afecta {
+          usuario(func: eq(user_id, "__USER__")) @filter(type(Usuario)) {
+            nombre
+            user_id
+            creo @filter(has(afecta)) {
               ticket_id
               titulo
-              creado_por {
-                user_id
-                email
+              afecta {
+                nombre
+                instal_id
               }
             }
           }
         }
         """
+        query = base_query.replace("__USER__", user_id)
+
         txn = client.txn(read_only=True)
         res = txn.query(query)
         data = json.loads(res.json)
-        instalaciones = data.get("instalaciones", [])
+        usuarios = data.get("usuario", [])
 
-        print("\n=== Historial de interacciones usuario - instalacion ===")
-        if not instalaciones:
-            print("No se encontraron instalaciones.")
+        print("\n=== Historial de interacciones usuario–instalación ===")
+        if not usuarios:
+            print("No se encontró el usuario en Dgraph.")
             return
 
-        for inst in instalaciones:
-            instal_id = inst.get("instal_id")
-            nombre = inst.get("instal_nombre")
-            tickets = inst.get("tickets", [])
+        u = usuarios[0]
+        print(f"Usuario: {u.get('user_id')} | {u.get('nombre')}")
+        tickets = u.get("creo", [])
+        if not tickets:
+            print("  (El usuario no tiene tickets que afecten instalaciones)")
+            return
 
-            print(f"\nInstalacion: {instal_id} ({nombre})")
-
-            if not tickets:
-                print("  Sin tickets registrados.")
-                continue
-
-            # Contar cuantas veces cada usuario reporta en esta instalacion
-            conteo_usuarios = {}
-            for t in tickets:
-                u = t.get("creado_por")
-                if not u:
-                    continue
-                uid = u.get("user_id")
-                email = u.get("email")
-                if not uid:
-                    continue
-                if uid not in conteo_usuarios:
-                    conteo_usuarios[uid] = {"email": email, "total": 0}
-                conteo_usuarios[uid]["total"] += 1
-
-            for uid, info in conteo_usuarios.items():
-                print(
-                    f"  Usuario {uid} ({info['email']}): "
-                    f"{info['total']} tickets en esta instalacion"
-                )
+        for t in tickets:
+            afecta = t.get("afecta") or {}
+            print(
+                f"  - Ticket {t.get('ticket_id')} | {t.get('titulo')} -> "
+                f"Instalación: {afecta.get('nombre')} ({afecta.get('instal_id')})"
+            )
     finally:
         close_client_stub(stub)
 
-
-# 4) Tickets relacionados por contexto (categoria)
-#    Requerimiento: identificar tickets que comparten misma categoria/tipo.
+# 3) Detectar tickets relacionados por contexto
+#    Requerimiento: problemas que se relacionan entre si.
 def tickets_relacionados_por_contexto():
     client, stub = get_client()
     try:
         query = """
         {
-          tickets(func: has(ticket_id)) {
+          tickets(func: has(ticket_id)) @filter(type(Ticket)) {
             ticket_id
             titulo
             categoria
@@ -193,7 +159,7 @@ def tickets_relacionados_por_contexto():
         data = json.loads(res.json)
         tickets = data.get("tickets", [])
 
-        print("\n=== Tickets relacionados por categoria (contexto) ===")
+        print("\n=== Tickets relacionados por contexto (categoría) ===")
         if not tickets:
             print("No se encontraron tickets.")
             return
@@ -202,164 +168,38 @@ def tickets_relacionados_por_contexto():
         por_categoria = {}
         for t in tickets:
             cat = t.get("categoria") or "sin_categoria"
-            if cat not in por_categoria:
-                por_categoria[cat] = []
-            por_categoria[cat].append(t)
+            por_categoria.setdefault(cat, []).append(t)
 
+        hay_alguno = False
         for cat, lista in por_categoria.items():
             if len(lista) < 2:
-                # Mostramos solo categorias con 2 o mas tickets
+                # Mostramos solo categorías con 2+ tickets
                 continue
-            print(f"\nCategoria: {cat}")
+            hay_alguno = True
+            print(f"\nCategoría: {cat}")
             for t in lista:
                 print(f"  - {t.get('ticket_id')} | {t.get('titulo')}")
+
+        if not hay_alguno:
+            print("No hay categorías con más de un ticket (no hay contexto compartido).")
     finally:
         close_client_stub(stub)
 
+    
+    
 
-# 5) Usuario con mayor diversidad de reportes
-#    Requerimiento: diversidad por categoria e instalacion.
-def usuario_mayor_diversidad_reportes():
+# 11) Conexión entre usuarios y horarios de reporte
+#     Requerimiento: horarios más frecuentes por usuario.
+
+def conexion_usuarios_horarios():
     client, stub = get_client()
     try:
         query = """
         {
-          usuarios(func: has(user_id)) {
+          usuarios(func: has(user_id)) @filter(type(Usuario)) {
             user_id
             email
-            tickets: ~creado_por {
-              ticket_id
-              categoria
-              afecta {
-                instal_id
-              }
-            }
-          }
-        }
-        """
-        txn = client.txn(read_only=True)
-        res = txn.query(query)
-        data = json.loads(res.json)
-        usuarios = data.get("usuarios", [])
-
-        print("\n=== Usuarios con mayor diversidad de reportes ===")
-        if not usuarios:
-            print("No se encontraron usuarios.")
-            return
-
-        resumen = []
-
-        for u in usuarios:
-            uid = u.get("user_id")
-            email = u.get("email")
-            tickets = u.get("tickets", [])
-
-            categorias = set()
-            instalaciones = set()
-
-            for t in tickets:
-                cat = t.get("categoria")
-                if cat:
-                    categorias.add(cat)
-
-                inst = t.get("afecta")
-                if inst and isinstance(inst, dict):
-                    iid = inst.get("instal_id")
-                    if iid:
-                        instalaciones.add(iid)
-
-            diversidad = len(categorias) + len(instalaciones)
-            resumen.append(
-                {
-                    "user_id": uid,
-                    "email": email,
-                    "total_tickets": len(tickets),
-                    "categorias": len(categorias),
-                    "instalaciones": len(instalaciones),
-                    "diversidad": diversidad,
-                }
-            )
-
-        # Ordenar por diversidad (descendente)
-        resumen.sort(key=lambda x: x["diversidad"], reverse=True)
-
-        for r in resumen:
-            print(
-                f"\nUsuario {r['user_id']} ({r['email']})"
-                f"\n  Total tickets: {r['total_tickets']}"
-                f"\n  Categorias distintas: {r['categorias']}"
-                f"\n  Instalaciones distintas: {r['instalaciones']}"
-                f"\n  Indicador de diversidad: {r['diversidad']}"
-            )
-    finally:
-        close_client_stub(stub)
-
-
-# 6) Deteccion de problemas recurrentes por categoria y periodo
-#    Requerimiento: problemas que se repiten en el tiempo.
-def problemas_recurrentes():
-    client, stub = get_client()
-    try:
-        query = """
-        {
-          tickets(func: has(ticket_id)) {
-            ticket_id
-            titulo
-            categoria
-            fecha_creacion
-          }
-        }
-        """
-        txn = client.txn(read_only=True)
-        res = txn.query(query)
-        data = json.loads(res.json)
-        tickets = data.get("tickets", [])
-
-        print("\n=== Problemas recurrentes por categoria y mes ===")
-        if not tickets:
-            print("No se encontraron tickets.")
-            return
-
-        # Agrupar por (categoria, periodo YYYY-MM)
-        conteo = {}
-
-        for t in tickets:
-            cat = t.get("categoria") or "sin_categoria"
-            fecha_str = t.get("fecha_creacion")
-            if not fecha_str:
-                continue
-            try:
-                dt = datetime.fromisoformat(fecha_str)
-            except Exception:
-                continue
-
-            periodo = dt.strftime("%Y-%m")  # ejemplo: 2025-10
-            clave = (cat, periodo)
-            if clave not in conteo:
-                conteo[clave] = 0
-            conteo[clave] += 1
-
-        # Mostrar resultados
-        for (cat, periodo), total in sorted(conteo.items()):
-            if total < 2:
-                # Mostramos solo casos con 2 o mas tickets
-                continue
-            print(f"- Categoria '{cat}' en periodo {periodo}: {total} tickets")
-    finally:
-        close_client_stub(stub)
-
-
-# 7) Conexion entre usuarios y horarios de reporte
-#    Requerimiento: horarios mas frecuentes de reporte por usuario.
-def horarios_reporte_por_usuario():
-    client, stub = get_client()
-    try:
-        query = """
-        {
-          usuarios(func: has(user_id)) {
-            user_id
-            email
-            tickets: ~creado_por {
+            creo {
               ticket_id
               fecha_creacion
             }
@@ -371,7 +211,7 @@ def horarios_reporte_por_usuario():
         data = json.loads(res.json)
         usuarios = data.get("usuarios", [])
 
-        print("\n=== Horarios de reporte por usuario ===")
+        print("\n=== Conexión entre usuarios y horarios de reporte ===")
         if not usuarios:
             print("No se encontraron usuarios.")
             return
@@ -379,7 +219,7 @@ def horarios_reporte_por_usuario():
         def obtener_turno(dt: datetime) -> str:
             h = dt.hour
             if 7 <= h < 15:
-                return "manana"
+                return "mañana"
             if 15 <= h < 22:
                 return "tarde"
             return "noche"
@@ -387,12 +227,12 @@ def horarios_reporte_por_usuario():
         for u in usuarios:
             uid = u.get("user_id")
             email = u.get("email")
-            tickets = u.get("tickets", [])
+            tickets = u.get("creo", [])
 
             if not tickets:
                 continue
 
-            conteo_turnos = {"manana": 0, "tarde": 0, "noche": 0}
+            conteo_turnos = {"mañana": 0, "tarde": 0, "noche": 0}
 
             for t in tickets:
                 fecha_str = t.get("fecha_creacion")
@@ -401,29 +241,29 @@ def horarios_reporte_por_usuario():
                 try:
                     dt = datetime.fromisoformat(fecha_str)
                 except Exception:
+                    # Si la fecha viene en otro formato la ignoramos
                     continue
                 turno = obtener_turno(dt)
                 conteo_turnos[turno] += 1
 
             print(f"\nUsuario {uid} ({email})")
             print(
-                f"  Manana: {conteo_turnos['manana']} | "
+                f"  Mañana: {conteo_turnos['mañana']} | "
                 f"Tarde: {conteo_turnos['tarde']} | "
                 f"Noche: {conteo_turnos['noche']}"
             )
     finally:
         close_client_stub(stub)
-
+   
+   
+#Menu para probar los requerimientos
 
 def print_menu():
     print("\n=== Menu de consultas Dgraph ===")
-    print("1. Relacion usuario - tickets creados")
-    print("2. Deteccion de tickets duplicados (por palabra en titulo)")
-    print("3. Historial usuario - instalacion")
-    print("4. Tickets relacionados por categoria (contexto)")
-    print("5. Usuarios con mayor diversidad de reportes")
-    print("6. Problemas recurrentes por categoria y mes")
-    print("7. Horarios de reporte por usuario")
+    print("1.  Relación usuario–ticket")
+    print("2.  Historial de interacciones usuario–instalación")
+    print("3.  Tickets relacionados por contexto (categoría)")
+    print("4.  Conexión entre usuarios y horarios de reporte")
     print("0. Salir")
 
 
@@ -431,9 +271,9 @@ def main():
     while True:
         print_menu()
         try:
-            op = int(input("Opcion: ").strip())
+            op = int(input("Opción: ").strip())
         except ValueError:
-            print("Opcion invalida.")
+            print("Opción inválida.")
             continue
 
         if op == 0:
@@ -442,19 +282,15 @@ def main():
         elif op == 1:
             reporte_usuario_ticket()
         elif op == 2:
-            detectar_tickets_duplicados()
-        elif op == 3:
             historial_usuario_instalacion()
+        elif op == 3:
+              tickets_relacionados_por_contexto()
         elif op == 4:
-            tickets_relacionados_por_contexto()
-        elif op == 5:
-            usuario_mayor_diversidad_reportes()
-        elif op == 6:
-            problemas_recurrentes()
-        elif op == 7:
-            horarios_reporte_por_usuario()
+            conexion_usuarios_horarios()
         else:
-            print("Opcion no valida.")
+            print("Opción no válida.")
+
+   
 
 
 if __name__ == "__main__":
