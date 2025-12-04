@@ -961,7 +961,7 @@ def populate_dgraph():
 def main():
     print("=== Populate: Mongo + Cassandra + Dgraph ===")
 
-    generar_csv_simple(archivo=CSV_PATH, filas=20)
+    generar_csv_simple(archivo=CSV_PATH, filas=100)
 
     populate_mongo()
     populate_cassandra()
