@@ -96,8 +96,7 @@ def buscar_titulos_falla():
     # Crear índice si no existe
     db.tickets.create_index("title")
 
-    # Query regex
-    filtro = { "title": { "$regex": r"^(Falla|Daño)", "$options": "i" } }
+    filtro = { "title": { "$regex": r"^(Falla|Daño)", "$options": "i" } }  # Usamos regex
 
     proyeccion = {
         "_id": 0,
@@ -290,7 +289,44 @@ def mostrar_usuarios():
         print("\nNo hay usuarios registrados.\n")
         return
 
-    print("\n=== Lista de usuarios ===")
+    print("\nLista de usuarios")
     for u in usuarios:
         print(f"{u['user_id']} | {u['expediente']} | {u['email']} | {u['role']}")
-    print("==========================\n")
+
+def tickets_recientes_por_instalacion():
+    install_id = input("installation_id: ").strip()
+    if not install_id:
+        print("\ninstallation_id vacío.\n")
+        return
+
+    try:
+        limite = int(input("¿Cuántos tickets recientes quieres ver? ").strip() or "10")
+    except ValueError:
+        limite = 10
+
+    filtro = {"installation_id": install_id}
+
+    proyeccion = {
+        "_id": 0,
+        "ticket_id": 1,
+        "title": 1,
+        "status": 1,
+        "priority": 1,
+        "installation_id": 1,
+        "created_at": 1,
+    }
+
+    resultados = list(
+        db.tickets
+          .find(filtro, proyeccion)
+          .sort("created_at", -1)   # usamos el índice { created_at: -1 }
+          .limit(limite)
+    )
+
+    if not resultados:
+        print("\nNo hay tickets para esa instalación.\n")
+        return
+
+    print(f"\nTickets recientes para instalación '{install_id}'")
+    for t in resultados:
+        print(f"{t['ticket_id']} | {t['title']} | {t['status']} | {t['priority']} | {t['created_at']}")

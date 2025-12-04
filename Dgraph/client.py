@@ -1,7 +1,6 @@
 import sys
 import os
 # Permite importar 'connect.py' desde la carpeta raíz del proyecto.
-# Sin esto, Python no puede acceder a módulos fuera de /Dgraph/.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from connect import create_client_stub, create_client, close_client_stub
@@ -41,8 +40,8 @@ def _normalizar_user_id(raw: str) -> str:
 # 1) Relacion usuario-ticket
 #    Requerimiento: saber quien creó cada ticket y listar todos los tickets de un usuario.
 def reporte_usuario_ticket():
-    user_id = input('user_id (ej. "U-001", vacío = todos): ').strip()
-    user_id = _normalizar_user_id(user_id)
+    raw_id = input('user_id (ej. "U-001", vacío = todos): ').strip()
+    user_id = _normalizar_user_id(raw_id)
 
     client, stub = get_client()
     try:
@@ -50,9 +49,8 @@ def reporte_usuario_ticket():
             base_query = """
             {
               usuario(func: eq(user_id, "__USER__")) @filter(type(Usuario)) {
-                nombre
-                email
                 user_id
+                email
                 creo {
                   ticket_id
                   titulo
@@ -64,12 +62,12 @@ def reporte_usuario_ticket():
             """
             query = base_query.replace("__USER__", user_id)
         else:
+            # Todos los usuarios con tickets, ordenados por user_id
             query = """
             {
               usuario(func: type(Usuario), orderasc: user_id) {
-                nombre
-                email
                 user_id
+                email
                 creo {
                   ticket_id
                   titulo
@@ -92,7 +90,6 @@ def reporte_usuario_ticket():
             return
 
         for u in usuarios:
-            # Mostramos solo una vez la palabra 'Usuario' para evitar duplicados visuales.
             print(f"\nUsuario {u.get('user_id')} | {u.get('email')}")
             tickets = u.get("creo", [])
             if not tickets:
@@ -109,8 +106,8 @@ def reporte_usuario_ticket():
 # 2) Historial de interacciones usuario - instalacion
 #    Requerimiento: usuarios que reportan frecuentemente en las mismas instalaciones.
 def historial_usuario_instalacion():
-    user_id = input('user_id (ej. "U-001"): ').strip()
-    user_id = _normalizar_user_id(user_id)
+    raw_id = input('user_id (ej. "U-001"): ').strip()
+    user_id = _normalizar_user_id(raw_id)
     if not user_id:
         print("Se requiere un user_id.")
         return
@@ -120,7 +117,6 @@ def historial_usuario_instalacion():
         base_query = """
         {
           usuario(func: eq(user_id, "__USER__")) @filter(type(Usuario)) {
-            nombre
             user_id
             creo @filter(has(afecta)) {
               ticket_id
@@ -146,7 +142,7 @@ def historial_usuario_instalacion():
             return
 
         u = usuarios[0]
-        print(f"Usuario: {u.get('user_id')} | {u.get('nombre')}")
+        print(f"Usuario: {u.get('user_id')}")
         tickets = u.get("creo", [])
         if not tickets:
             print("  (El usuario no tiene tickets que afecten instalaciones)")
@@ -337,7 +333,7 @@ def conexion_usuarios_horarios():
     try:
         query = """
         {
-          usuarios(func: has(user_id)) @filter(type(Usuario)) {
+          usuarios(func: type(Usuario)) {
             user_id
             email
             creo {
@@ -358,12 +354,14 @@ def conexion_usuarios_horarios():
             return
 
         def obtener_turno(dt: datetime) -> str:
+            """
+            Regresa 'mañana' o 'tarde_noche' según la hora.
+            En este proyecto solo manejamos dos turnos.
+            """
             h = dt.hour
             if 7 <= h < 15:
                 return "mañana"
-            if 15 <= h < 22:
-                return "tarde"
-            return "noche"
+            return "tarde_noche"
 
         for u in usuarios:
             uid = u.get("user_id")
@@ -373,31 +371,50 @@ def conexion_usuarios_horarios():
             if not tickets:
                 continue
 
-            conteo_turnos = {"mañana": 0, "tarde": 0, "noche": 0}
+            conteo_turnos = {"mañana": 0, "tarde_noche": 0}
+            conteo_horas = [0] * 24  # 0..23
 
             for t in tickets:
                 fecha_str = t.get("fecha_creacion")
                 if not fecha_str:
                     continue
                 try:
-                    dt = datetime.fromisoformat(fecha_str)
+                    # Dgraph suele devolver datetime como 'YYYY-MM-DDTHH:MM:SSZ'.
+                    if fecha_str.endswith("Z"):
+                        fecha_str_norm = fecha_str[:-1] + "+00:00"
+                    else:
+                        fecha_str_norm = fecha_str
+                    dt = datetime.fromisoformat(fecha_str_norm)
                 except Exception:
                     # Si la fecha viene en otro formato la ignoramos
                     continue
                 turno = obtener_turno(dt)
                 conteo_turnos[turno] += 1
 
+                hora = dt.hour
+                if 0 <= hora < 24:
+                    conteo_horas[hora] += 1
+
             print(f"\nUsuario {uid} ({email})")
             print(
                 f"  Mañana: {conteo_turnos['mañana']} | "
-                f"Tarde: {conteo_turnos['tarde']} | "
-                f"Noche: {conteo_turnos['noche']}"
+                f"Tarde_noche: {conteo_turnos['tarde_noche']}"
             )
+
+            # Mostrar solo las horas donde realmente hay tickets
+            horas_con_tickets = [
+                f"{h:02d}: {conteo_horas[h]}"
+                for h in range(24)
+                if conteo_horas[h] > 0
+            ]
+            if horas_con_tickets:
+                print("  Horas con tickets (00-23):")
+                print("   " + " | ".join(horas_con_tickets))
     finally:
         close_client_stub(stub)
-   
-   
-#Menu para probar los requerimientos
+
+
+# Menú para probar los requerimientos
 
 def print_menu():
     print("\n=== Menu de consultas Dgraph ===")
@@ -426,7 +443,7 @@ def main():
         elif op == 2:
             historial_usuario_instalacion()
         elif op == 3:
-              tickets_relacionados_por_contexto()
+            tickets_relacionados_por_contexto()
         elif op == 4:
             conexion_usuarios_horarios()
         elif op==5:

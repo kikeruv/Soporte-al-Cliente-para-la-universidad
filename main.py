@@ -16,6 +16,7 @@ from Mongo.client import (
     resumen_objetos_perdidos,
     tickets_cerrados_por_categoria,
     mostrar_usuarios,
+    tickets_recientes_por_instalacion
 )
 from Cassandra import model as cass_model
 from Dgraph import client as dgraph_client  #Utilizamos la las funciones de client.py
@@ -202,6 +203,7 @@ def menu_instalaciones():
         print("1. Instalaciones con mas incidencias M")
         print("2. tickets_por_instalacion_fechas C")
         print("3. tickets_por_instalaciones C")
+        print("4. Tickets recientes por instalacion M")
         print("0. Volver al menu principal")
 
         try:
@@ -222,6 +224,8 @@ def menu_instalaciones():
         elif op == 3:
             install_id = input("install_id / instalacion (ej. biblioteca): ").strip()
             cass_model.tickets_por_instalaciones(session, install_id)
+        elif op == 4:
+            tickets_recientes_por_instalacion()  
         else:
             print("Opcion no valida.")
 
