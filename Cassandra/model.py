@@ -157,7 +157,7 @@ CREATE_CONTEO_TICKETS_POR_PRIORIDAD_TABLE = """
 """
 
 
-# 12. Tickets por instalaciones (usando install_id como instalacion)
+# 12. Tickets por instalaciones 
 CREATE_TICKETS_POR_INSTALACIONES_TABLE = """
     CREATE TABLE IF NOT EXISTS tickets_por_instalaciones (
         instalacion text,
@@ -207,10 +207,7 @@ def create_schema(session):
     session.execute(CREATE_TICKETS_POR_TURNO_TABLE)
 
 
-# =========================
-# Funciones de consultas
-# =========================
-
+#consultas
 
 def _parse_date(date_str: str) -> date:
     return datetime.strptime(date_str, "%Y-%m-%d").date()

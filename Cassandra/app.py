@@ -16,7 +16,6 @@ handler.setFormatter(
 )
 log.addHandler(handler)
 
-# Read env vars related to Cassandra App
 CLUSTER_IPS = os.getenv("CASSANDRA_CLUSTER_IPS", "127.0.0.1")
 KEYSPACE = os.getenv("CASSANDRA_KEYSPACE", "proyecto")
 REPLICATION_FACTOR = os.getenv("CASSANDRA_REPLICATION_FACTOR", "1")
@@ -49,11 +48,9 @@ def main():
     cluster = Cluster(CLUSTER_IPS.split(","))
     session = cluster.connect()
 
-    # Crea el keyspace (si no existe) y selecciona el keyspace
     model.create_keyspace(session, KEYSPACE, REPLICATION_FACTOR)
     session.set_keyspace(KEYSPACE)
 
-    # Crea todas las tablas del modelo de soporte (por si faltan)
     model.create_schema(session)
 
     print(f"Cassandra listo. KEYSPACE en uso: {KEYSPACE}")
