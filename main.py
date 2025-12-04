@@ -99,7 +99,7 @@ def menu_dgraph():
         print("1. Relacion usuario-ticket")
         print("2. Historial de interacciones usuario–instalacion")
         print("3. Tickets relacionados por contexto")
-        print("4. Conexion entre usuarios y horario de reporte")
+        print("4. Historial relacional del ticket")
         print("5.  Conexión entre usuarios y horarios de reporte")
         print("0. Volver al menu principal")
 
