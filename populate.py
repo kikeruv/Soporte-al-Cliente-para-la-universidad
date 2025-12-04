@@ -608,42 +608,6 @@ def populate_dgraph():
 
     objetos = []
 
-    # ---------- Departamentos ----------
-    departamentos_info = [
-        {
-            "dept_id": "DESI",
-            "nombre": "Departamento de Electronica, Sistemas e Informatica",
-            "edificio": "Edificio J",
-        },
-        {
-            "dept_id": "DECS",
-            "nombre": "Departamento de Ciencias Sociales",
-            "edificio": "Edificio H",
-        },
-        {
-            "dept_id": "DEAM",
-            "nombre": "Departamento de Administracion y Finanzas",
-            "edificio": "Edificio A",
-        },
-        {
-            "dept_id": "DEGN",
-            "nombre": "Departamento de Negocios",
-            "edificio": "Edificio N",
-        },
-    ]
-
-    dept_map = {}
-    for d in departamentos_info:
-        uid = f"_:dep_{d['dept_id']}"
-        dept_map[d["dept_id"]] = uid
-        obj = {
-            "uid": uid,
-            "dgraph.type": "Departamento",
-            "dept_id": d["dept_id"],
-            "nombre": d["nombre"],
-            "edificio": d["edificio"],
-        }
-        objetos.append(obj)
 
     # ---------- Agentes ----------
     agentes_info = [
@@ -663,11 +627,7 @@ def populate_dgraph():
             "nombre": a["nombre"],
             "email": a["email"],
         }
-        dep_uid = dept_map.get(a["dept_id"])
-        if dep_uid:
-            obj["departamento"] = {"uid": dep_uid}
-        objetos.append(obj)
-
+       
     # ---------- Periodos temporales (meses 2025-09,10,11) ----------
     periodos_info = {
         9: {
@@ -811,9 +771,7 @@ def populate_dgraph():
         rol = u.get("role", "")
         email = u.get("email", "")
 
-        # Asignar departamento aleatorio
-        dept_id_random = random.choice(list(dept_map.keys()))
-        dep_uid = {"uid": dept_map[dept_id_random]} if dept_id_random else None
+        
 
         user_obj = {
             "uid": uid,
@@ -825,8 +783,7 @@ def populate_dgraph():
             "expediente": expediente,
             "creo": [],  # se llenara con los tickets
         }
-        if dep_uid:
-            user_obj["departamento"] = dep_uid
+       
 
         usuarios_map[user_id] = user_obj
         objetos.append(user_obj)
@@ -929,9 +886,7 @@ def populate_dgraph():
         agente_id = random.choice(list(agente_map.keys()))
         ticket_obj["asignado_a"] = {"uid": agente_map[agente_id]}
 
-        # escalado_a -> Departamento (por ejemplo, solo prioridad alta)
-        if t.get("priority") == "alta":
-            ticket_obj["escalado_a"] = {"uid": dept_map["DESI"]}
+
 
         # ocurre_en -> PeriodoTemporal (segun mes)
         periodo_uid = periodo_map.get(month)
