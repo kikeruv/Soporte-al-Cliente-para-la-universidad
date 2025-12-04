@@ -92,6 +92,7 @@ def menu_dgraph():
     2) Historial usuario–instalación
     3) Tickets relacionados por contexto
     4) Conexión entre usuarios y horarios de reporte
+    5) Historial relacional del ticket
     """
     while True:
         print("\n=== Reportes en Dgraph ===")
@@ -99,6 +100,7 @@ def menu_dgraph():
         print("2. Historial de interacciones usuario–instalacion")
         print("3. Tickets relacionados por contexto")
         print("4. Conexion entre usuarios y horario de reporte")
+        print("5.  Conexión entre usuarios y horarios de reporte")
         print("0. Volver al menu principal")
 
         try:
@@ -121,6 +123,8 @@ def menu_dgraph():
         elif op == 4:
             # Requerimiento 11: Conexion entre usuarios y horarios de reporte
             dgraph_client.conexion_usuarios_horarios()
+        elif op==5:
+            dgraph_client.historial_relacional_ticket()
         else:
             print("Opcion no valida.")
 
