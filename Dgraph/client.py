@@ -20,10 +20,29 @@ def get_client():
     return client, stub
 
 
+def _normalizar_user_id(raw: str) -> str:
+    """
+    Adapta el valor ingresado al formato real de user_id usado en los datos (por ejemplo, 'U001').
+    Acepta formas como 'U-001', 'U001', '001' y devuelve siempre 'U001'.
+    """
+    if not raw:
+        return ""
+    s = raw.strip().upper()
+    s = s.replace("-", "").replace(" ", "")
+    if s.startswith("U"):
+        numeros = "".join(ch for ch in s[1:] if ch.isdigit())
+    else:
+        numeros = "".join(ch for ch in s if ch.isdigit())
+    if not numeros:
+        return ""
+    return "U" + numeros.zfill(3)
+
+
 # 1) Relacion usuario-ticket
 #    Requerimiento: saber quien creó cada ticket y listar todos los tickets de un usuario.
 def reporte_usuario_ticket():
     user_id = input('user_id (ej. "U-001", vacío = todos): ').strip()
+    user_id = _normalizar_user_id(user_id)
 
     client, stub = get_client()
     try:
@@ -47,7 +66,7 @@ def reporte_usuario_ticket():
         else:
             query = """
             {
-              usuario(func: type(Usuario)) {
+              usuario(func: type(Usuario), orderasc: user_id) {
                 nombre
                 email
                 user_id
@@ -73,7 +92,8 @@ def reporte_usuario_ticket():
             return
 
         for u in usuarios:
-            print(f"\nUsuario: {u.get('user_id')} | {u.get('nombre')} | {u.get('email')}")
+            # Mostramos solo una vez la palabra 'Usuario' para evitar duplicados visuales.
+            print(f"\nUsuario {u.get('user_id')} | {u.get('email')}")
             tickets = u.get("creo", [])
             if not tickets:
                 print("  (Sin tickets creados)")
@@ -90,6 +110,7 @@ def reporte_usuario_ticket():
 #    Requerimiento: usuarios que reportan frecuentemente en las mismas instalaciones.
 def historial_usuario_instalacion():
     user_id = input('user_id (ej. "U-001"): ').strip()
+    user_id = _normalizar_user_id(user_id)
     if not user_id:
         print("Se requiere un user_id.")
         return

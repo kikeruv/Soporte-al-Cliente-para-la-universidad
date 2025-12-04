@@ -21,6 +21,7 @@ from Cassandra import model as cass_model
 from Dgraph import client as dgraph_client  #Utilizamos la las funciones de client.py
 import populate
 import json
+import pydgraph
 
 
 # Helper para asegurar que el esquema de Cassandra se cree solo una vez
@@ -128,7 +129,8 @@ def menu_dgraph():
 def borrar_datos():
     """
     Borra todos los datos de Mongo (users, tickets)
-    y todas las tablas de Cassandra del keyspace de proyecto.
+    todas las tablas de Cassandra del keyspace de proyecto
+    y todo el contenido de Dgraph.
     """
     print(
         "\nADVERTENCIA: Esta opcion borrara TODOS los datos "
@@ -170,6 +172,22 @@ def borrar_datos():
         print("Cassandra: tablas de proyecto truncadas.")
     except Exception as e:
         print("Error al borrar datos en Cassandra:", e)
+
+    # Dgraph
+    stub = None
+    try:
+        stub = create_client_stub()
+        client = create_client(stub)
+        client.alter(pydgraph.Operation(drop_all=True))
+        print("Dgraph: todos los datos borrados (drop_all).")
+    except Exception as e:
+        print("Error al borrar datos en Dgraph:", e)
+    finally:
+        if stub is not None:
+            try:
+                close_client_stub(stub)
+            except Exception:
+                pass
 
 
 ##### Submenus por tipo de reporte #####

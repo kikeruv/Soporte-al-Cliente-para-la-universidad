@@ -513,6 +513,9 @@ def populate_dgraph():
     afecta: uid @reverse .
     tipo: uid .
     pertenece_a_categoria: uid .
+    asignado_a: uid @reverse .
+    escalado_a: uid @reverse .
+    ocurre_en: uid @reverse .
     reporta_en: uid @reverse .
     contiene: [uid] .
 
