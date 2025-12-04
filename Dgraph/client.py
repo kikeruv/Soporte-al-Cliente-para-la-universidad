@@ -206,6 +206,126 @@ def tickets_relacionados_por_contexto():
     finally:
         close_client_stub(stub)
 
+# 4) Historial relacional del ticket
+#    Requerimiento: ver todo el contexto del ticket
+#    (quién lo reportó, instalación, categoría, tipo, agente asignado).
+def historial_relacional_ticket():
+    ticket_id = input('ticket_id (ej. "TK-3001"): ').strip()
+    if not ticket_id:
+        print("Se requiere un ticket_id.")
+        return
+
+    client, stub = get_client()
+    try:
+        base_query = """
+        {
+          ticket(func: eq(ticket_id, "__TICKET__")) @filter(type(Ticket)) {
+            ticket_id
+            titulo
+            estado
+            prioridad
+            fecha_creacion
+
+            ~creo {
+              user_id
+              nombre
+              email
+            }
+
+            afecta {
+              instal_id
+              nombre
+            }
+
+            pertenece_a_categoria {
+              nombre
+              descripcion
+            }
+
+            tipo {
+              tipo_id
+              descripcion
+            }
+
+            asignado_a {
+              agente_id
+              nombre
+              email
+            }
+          }
+        }
+        """
+        query = base_query.replace("__TICKET__", ticket_id)
+
+        txn = client.txn(read_only=True)
+        res = txn.query(query)
+        data = json.loads(res.json)
+        tickets = data.get("ticket", [])
+
+        print("\n=== Historial relacional del ticket ===")
+        if not tickets:
+            print("No se encontró el ticket en Dgraph.")
+            return
+
+        t = tickets[0]
+
+        print(f"\nTicket: {t.get('ticket_id')} | {t.get('titulo')}")
+        print(f"  Estado: {t.get('estado')} | Prioridad: {t.get('prioridad')}")
+        print(f"  Fecha de creación: {t.get('fecha_creacion')}")
+
+        # Quién lo reportó (~creo)
+        creador = t.get("~creo", [])
+        if creador:
+            u = creador[0]
+            print(
+                f"\n  Reportado por: {u.get('nombre')} "
+                f"({u.get('user_id')} - {u.get('email')})"
+            )
+        else:
+            print("\n  Reportado por: (no encontrado)")
+
+        # Instalación
+        inst = t.get("afecta")
+        if inst:
+            print(
+                f"  Instalación afectada: {inst.get('nombre')} "
+                f"({inst.get('instal_id')})"
+            )
+        else:
+            print("  Instalación afectada: (no registrada)")
+
+        # Categoría
+        cat = t.get("pertenece_a_categoria")
+        if cat:
+            print(
+                f"  Categoría: {cat.get('nombre')} - "
+                f"{cat.get('descripcion')}"
+            )
+        else:
+            print("  Categoría: (no registrada)")
+
+        # Tipo de problema
+        tipo = t.get("tipo")
+        if tipo:
+            print(
+                f"  Tipo de problema: {tipo.get('descripcion')} "
+                f"({tipo.get('tipo_id')})"
+            )
+        else:
+            print("  Tipo de problema: (no registrado)")
+
+        # Agente asignado
+        agente = t.get("asignado_a")
+        if agente:
+            print(
+                f"  Asignado a: {agente.get('nombre')} "
+                f"({agente.get('agente_id')} - {agente.get('email')})"
+            )
+        else:
+            print("  Asignado a: (ningún agente)")
+    finally:
+        close_client_stub(stub)
+
     
     
 
@@ -284,7 +404,8 @@ def print_menu():
     print("1.  Relación usuario–ticket")
     print("2.  Historial de interacciones usuario–instalación")
     print("3.  Tickets relacionados por contexto (categoría)")
-    print("4.  Conexión entre usuarios y horarios de reporte")
+    print("4.  Historial relacional del ticket")
+    print("5.  Conexión entre usuarios y horarios de reporte")
     print("0. Salir")
 
 
@@ -308,6 +429,8 @@ def main():
               tickets_relacionados_por_contexto()
         elif op == 4:
             conexion_usuarios_horarios()
+        elif op==5:
+            historial_relacional_ticket()
         else:
             print("Opción no válida.")
 
