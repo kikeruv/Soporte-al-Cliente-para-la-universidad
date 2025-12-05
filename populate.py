@@ -492,7 +492,7 @@ def populate_dgraph():
     stub = create_client_stub()
     client = create_client(stub)
 
-    # 1) Esquema RDF para los 4 requerimientos
+    # 1) Esquema RDF para los 5 requerimientos
     schema = """
     user_id: string @index(exact) .
     nombre: string @index(term) .
