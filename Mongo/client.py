@@ -1,6 +1,6 @@
 from connect import db
-
-def filtrar_por_categoria():
+#############################
+def filtrar_por_categoria():#
 
     tickets = list(db.tickets.find(
         {},
@@ -45,8 +45,8 @@ def filtrar_por_categoria():
     print("\nTotal de tickets por categoría")
     for doc in resultados:
         print(f"- {doc['category']}: {doc['total_tickets']}")
-
-def resumen_estado():
+######################
+def resumen_estado():#
 
     tickets = list(db.tickets.find(
         {},
@@ -91,8 +91,8 @@ def resumen_estado():
     print("\nTotal de tickets por estado")
     for doc in resultados:
         print(f"- {doc['status']}: {doc['total_tickets']}")
-
-def buscar_titulos_falla():
+############################
+def buscar_titulos_falla():#
     # Crear índice si no existe
     db.tickets.create_index("title")
 
@@ -117,8 +117,8 @@ def buscar_titulos_falla():
     print("\nTickets cuyo título inicia con 'Falla' o 'Daño'")
     for t in resultados:
         print(f"- {t['ticket_id']} | {t['title']} | {t['category']} | {t['status']} | {t.get('installation_id')} | {t.get('created_at')}")
-
-def lugares_con_mas_perdidas():
+################################
+def lugares_con_mas_perdidas():#
 
     pipeline = [
         {"$match": {"category": "cosas_perdidas"}},
@@ -136,8 +136,8 @@ def lugares_con_mas_perdidas():
     print("\nLugares con más reportes de pérdidas")
     for doc in resultados:
         print(f"- {doc['place_name']}: {doc['total']}")
-
-def instalaciones_con_mas_incidencias():
+#########################################
+def instalaciones_con_mas_incidencias():#
 
     pipeline = [
         {"$group": {"_id": "$installation_id", "total_tickets": {"$sum": 1}}},
@@ -154,8 +154,8 @@ def instalaciones_con_mas_incidencias():
     print("\nInstalaciones con más incidencias")
     for doc in resultados:
         print(f"- {doc['installation_id']}: {doc['total_tickets']}")
-
-def buscar_por_texto():
+########################
+def buscar_por_texto():#
 
     # Crear índice de texto si no existe
     db.tickets.create_index([
@@ -185,10 +185,9 @@ def buscar_por_texto():
     for t in resultados:
         print(f"{t['ticket_id']} | {t['title']} | objeto: {t.get('object_name')} | categoría: {t.get('category')} | instalación: {t.get('installation_id')} | {t.get('created_at')}")
 
-    print("Resumen de búsqueda por texto")
     print(f"Total de coincidencias: {len(resultados)}")
-
-def resumen_objetos_perdidos():
+################################
+def resumen_objetos_perdidos():#
 
     tickets = list(db.tickets.find(
         {"category": "cosas_perdidas"},
@@ -233,8 +232,8 @@ def resumen_objetos_perdidos():
     print("\nResumen de objetos perdidos")
     for doc in resultados:
         print(f"- {doc['lost_status']}: {doc['total']}")
-
-def tickets_cerrados_por_categoria():
+######################################
+def tickets_cerrados_por_categoria():#
 
     tickets = list(db.tickets.find(
         {"status": "cerrado"},
@@ -270,11 +269,11 @@ def tickets_cerrados_por_categoria():
         print("\nNo se encontraron tickets cerrados.\n")
         return
 
-    print("\n7Tickets cerrados por categoría")
+    print("\nTickets cerrados por categoría")
     for doc in resultados:
         print(f"- {doc['category']}: {doc['total_closed']}")
-
-def mostrar_usuarios():
+########################
+def mostrar_usuarios():#
     usuarios = list(db.users.find(
         {},
         {
@@ -330,3 +329,26 @@ def tickets_recientes_por_instalacion():
     print(f"\nTickets recientes para instalación '{install_id}'")
     for t in resultados:
         print(f"{t['ticket_id']} | {t['title']} | {t['status']} | {t['priority']} | {t['created_at']}")
+
+#####################################
+def distribucion_categoria_estado():#
+    pipeline = [
+        {"$group": {"_id": {"category": "$category","status": "$status"},
+        "total_tickets": {"$sum": 1}}},
+        {"$project": {"_id": 0,"category": "$_id.category","status": "$_id.status",
+        "total_tickets": 1}},
+        {"$sort": {"category": 1,"status": 1}}
+    ]
+
+    resultados = list(db.tickets.aggregate(pipeline))
+
+    print("\n=== Distribución de tickets por categoría y estado ===")
+    if not resultados:
+        print("No hay tickets para mostrar.\n")
+    else:
+        for doc in resultados:
+            print(
+                f"category: {doc['category']} | "
+                f"status: {doc['status']} | "
+                f"total_tickets: {doc['total_tickets']}"
+            )

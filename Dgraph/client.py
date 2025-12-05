@@ -323,10 +323,7 @@ def historial_relacional_ticket():
         close_client_stub(stub)
 
     
-    
 
-# 11) Conexión entre usuarios y horarios de reporte
-#     Requerimiento: horarios más frecuentes por usuario.
 
 def conexion_usuarios_horarios():
     client, stub = get_client()

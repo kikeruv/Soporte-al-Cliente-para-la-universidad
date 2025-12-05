@@ -24,6 +24,51 @@ def generar_csv_simple(archivo: str = CSV_PATH, filas: int = 50):
         "ticket_id", "title", "description", "category", "status", "priority",
         "installation_id", "place_name", "object_name", "lost_status", "turno"
     ]
+    titulos = [
+        "Falla en equipo de computo",
+        "Falla en proyector del salon",
+        "Falla en red del edificio",
+        "Falla en sistema de impresion",
+        "Falla en bocinas del aula",
+        "Daño en mobiliario",
+        "Daño en pantalla del laboratorio",
+        "Daño en cableado electrico",
+        "Daño en equipo multimedia",
+        "Daño en puerta del aula",
+        "Reporte de incidencia",
+        "Sistema no responde",
+        "Solicitud de mantenimiento",
+        "Incidente recurrente reportado",
+        "Aviso de comportamiento anormal",
+        "Error al iniciar sesion",
+        "Equipo lento durante el uso",
+        "Solicitud de verificación de red",
+        "Advertencia de seguridad",
+        "Actualización requerida en sistema",
+        "Problema detectado durante la clase",
+        "Revisión solicitada del equipo",
+        "Inconveniente en área de estudio",
+        "Petición de soporte técnico",
+        "Reporte de comportamiento extraño",
+        "Problema en laboratorio de computo",
+        "Incidente en edificio de ingenierias",
+        "Reporte de falla en iluminación",
+        "Problema en red del edificio",
+        "Mal funcionamiento en sala de lectura",
+        "Incidente durante clase",
+        "Profesor solicita revisión del equipo",
+        "Equipo no responde durante sesión",
+        "Interrupción en presentación del docente",
+        "Objeto perdido en biblioteca",
+        "Llaves extraviadas en cafetería",
+        "Se encontró objeto sin dueño",
+        "Reporte de mochila perdida",
+        "Extravio de cartera en instalaciones",
+        "Reporte general de mantenimiento",
+        "Reporte de situación anómala",
+        "Reporte de equipo defectuoso",
+        "Reporte preliminar de incidente",
+    ]
 
     roles = ["docente", "estudiante"]
     categorias = ["instalaciones", "docentes", "cosas_perdidas"]
@@ -121,7 +166,7 @@ def generar_csv_simple(archivo: str = CSV_PATH, filas: int = 50):
                 installation_id = random.choice(installation_ids)
                 place_name = random.choice(place_names)
 
-                title = f"Reporte {ticket_counter}"
+                title = random.choice(titulos)
                 description = random.choice(descripciones)
 
                 if category == "cosas_perdidas":
