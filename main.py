@@ -16,7 +16,8 @@ from Mongo.client import (
     resumen_objetos_perdidos,
     tickets_cerrados_por_categoria,
     mostrar_usuarios,
-    tickets_recientes_por_instalacion
+    tickets_recientes_por_instalacion,
+    distribucion_categoria_estado
 )
 from Cassandra import model as cass_model
 from Dgraph import client as dgraph_client  #Utilizamos la las funciones de client.py
@@ -99,7 +100,7 @@ def menu_dgraph():
         print("1. Relacion usuario-ticket")
         print("2. Historial de interacciones usuario–instalacion")
         print("3. Tickets relacionados por contexto")
-        print("4. Conexion entre usuarios y horario de reporte")
+        print("4. Historial relacional del ticket")
         print("5.  Conexión entre usuarios y horarios de reporte")
         print("0. Volver al menu principal")
 
@@ -261,13 +262,14 @@ def menu_tickets():
         print("3. Titulos que empiezan con 'Falla' o 'Dano' M")
         print("4. Busqueda por texto en tickets M")
         print("5. Tickets cerrados por categoria M")
-        print("6. alertas_tickets_vencidos C")
-        print("7. conteo_tickets_por_categoria_dia C")
-        print("8. historial_ticket C")
-        print("9. tickets_por_estado C")
-        print("10. filtrado_tickets_por_fecha C")
-        print("11. conteo_tickets_por_prioridad C")
-        print("12. tickets_por_turno C")
+        print("6. Distribución categoría–estado M")
+        print("7. Alertas_tickets_vencidos C")
+        print("8. Conteo_tickets_por_categoria_dia C")
+        print("9. Historial_ticket C")
+        print("10. Tickets_por_estado C")
+        print("11. Filtrado_tickets_por_fecha C")
+        print("12. Conteo_tickets_por_prioridad C")
+        print("13. Tickets_por_turno C")
         print("0. Volver al menu principal")
 
         try:
