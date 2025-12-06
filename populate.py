@@ -537,7 +537,7 @@ def populate_dgraph():
     stub = create_client_stub()
     client = create_client(stub)
 
-    # 1) Esquema RDF para los 5 requerimientos
+  # Esquema RDF
     schema = """
     user_id: string @index(exact) .
     nombre: string @index(term) .
@@ -567,7 +567,6 @@ def populate_dgraph():
     ubicacion: string .
 
     dept_id: string @index(exact) .
-    edificio: string .
 
     tipo_id: string @index(exact) .
 
@@ -634,6 +633,19 @@ def populate_dgraph():
       palabra
     }
 
+    type Agente {
+      agente_id
+      nombre
+      email
+    }
+
+    type PeriodoTemporal {
+      periodo_id
+      descripcion
+      fecha_inicio
+      fecha_fin
+    }
+
     type Horario {
       horario_id
       hora_inicio
@@ -645,12 +657,11 @@ def populate_dgraph():
     op = pydgraph.Operation(schema=schema)
     client.alter(op)
 
-    # 2) Leer datos de Mongo
+    # Datos desde Mongo
     usuarios_db = list(db.users.find())
     tickets_db = list(db.tickets.find())
 
     objetos = []
-
 
     # ---------- Agentes ----------
     agentes_info = [
@@ -663,15 +674,17 @@ def populate_dgraph():
     for a in agentes_info:
         uid = f"_:ag_{a['agente_id']}"
         agente_map[a["agente_id"]] = uid
-        obj = {
-            "uid": uid,
-            "dgraph.type": "Agente",
-            "agente_id": a["agente_id"],
-            "nombre": a["nombre"],
-            "email": a["email"],
-        }
-       
-    # ---------- Periodos temporales (meses 2025-09,10,11) ----------
+        objetos.append(
+            {
+                "uid": uid,
+                "dgraph.type": "Agente",
+                "agente_id": a["agente_id"],
+                "nombre": a["nombre"],
+                "email": a["email"],
+            }
+        )
+
+    # ---------- Periodos temporales ----------
     periodos_info = {
         9: {
             "periodo_id": "P-2025-09",
@@ -806,15 +819,14 @@ def populate_dgraph():
     # ---------- Usuarios ----------
     usuarios_map = {}
     for u in usuarios_db:
-        uid = f"_:u_{u.get('user_id')}"
         user_id = u.get("user_id")
         if not user_id:
             continue
+
+        uid = f"_:u_{user_id}"
         expediente = str(u.get("expediente", ""))
         rol = u.get("role", "")
         email = u.get("email", "")
-
-        
 
         user_obj = {
             "uid": uid,
@@ -824,9 +836,8 @@ def populate_dgraph():
             "email": email,
             "rol": rol,
             "expediente": expediente,
-            "creo": [],  # se llenara con los tickets
+            "creo": [],
         }
-       
 
         usuarios_map[user_id] = user_obj
         objetos.append(user_obj)
@@ -838,30 +849,9 @@ def populate_dgraph():
         return w.lower().strip(".,;:¡!¿?()[]{}\"'")
 
     stopwords = {
-        "el",
-        "la",
-        "los",
-        "las",
-        "un",
-        "una",
-        "unos",
-        "unas",
-        "de",
-        "del",
-        "en",
-        "y",
-        "o",
-        "por",
-        "para",
-        "con",
-        "al",
-        "se",
-        "lo",
-        "que",
-        "es",
-        "esta",
-        "este",
-        "son",
+        "el", "la", "los", "las", "un", "una", "unos", "unas",
+        "de", "del", "en", "y", "o", "por", "para", "con", "al",
+        "se", "lo", "que", "es", "esta", "este", "son",
     }
 
     # ---------- Tickets ----------
@@ -870,7 +860,6 @@ def populate_dgraph():
         if not ticket_id:
             continue
 
-        # Reusar la misma logica de fechas que Cassandra: 2025-09,10,11
         try:
             num = int(ticket_id.split("-")[1])
         except (IndexError, ValueError):
@@ -907,16 +896,16 @@ def populate_dgraph():
         if inst_id and inst_id in instal_map:
             ticket_obj["afecta"] = {"uid": instal_map[inst_id]}
 
-        # pertenece_a_categoria
+        # categoria (string simple)
         categoria_nombre = t.get("category")
         if categoria_nombre:
-            ticket_obj["categoria"] = categoria_nombre 
+            ticket_obj["categoria"] = categoria_nombre
 
+        # pertenece_a_categoria
         if categoria_nombre and categoria_nombre in categoria_map:
             ticket_obj["pertenece_a_categoria"] = {"uid": categoria_map[categoria_nombre]}
-       
 
-        # tipo -> TipoProblema (simple mapeo por categoria)
+        # tipo -> TipoProblema
         if categoria_nombre == "instalaciones":
             tipo_id = "TP-01"
         elif categoria_nombre == "docentes":
@@ -925,18 +914,23 @@ def populate_dgraph():
             tipo_id = "TP-03"
         ticket_obj["tipo"] = {"uid": tipo_map[tipo_id]}
 
-        # asignado_a -> Agente (aleatorio)
+        # asignado_a -> Agente
         agente_id = random.choice(list(agente_map.keys()))
         ticket_obj["asignado_a"] = {"uid": agente_map[agente_id]}
 
+        # escalado_a -> Agente (algunos)
+        if random.random() < 0.4:
+            agentes_posibles = [aid for aid in agente_map.keys() if aid != agente_id]
+            if agentes_posibles:
+                agente_id_esc = random.choice(agentes_posibles)
+                ticket_obj["escalado_a"] = {"uid": agente_map[agente_id_esc]}
 
-
-        # ocurre_en -> PeriodoTemporal (segun mes)
+        # ocurre_en -> PeriodoTemporal
         periodo_uid = periodo_map.get(month)
         if periodo_uid:
             ticket_obj["ocurre_en"] = {"uid": periodo_uid}
 
-        # reporta_en -> Horario (segun turno o hora)
+        # reporta_en -> Horario
         turno = t.get("turno")
         if not turno:
             turno = "manana" if hour < 15 else "tarde_noche"
@@ -944,7 +938,7 @@ def populate_dgraph():
             turno = "manana"
         ticket_obj["reporta_en"] = {"uid": horario_map[turno]}
 
-        # contiene -> PalabraClave (a partir de titulo + descripcion)
+        # contiene -> PalabraClave
         palabras_ticket = []
         texto = (t.get("title", "") + " " + t.get("description", "")).split()
         for raw in texto:
@@ -953,7 +947,6 @@ def populate_dgraph():
                 continue
             palabras_ticket.append(w)
 
-        # Palabras distintas, max 5 por ticket
         palabras_ticket = list(dict.fromkeys(palabras_ticket))[:5]
 
         contiene_uids = []
@@ -980,7 +973,7 @@ def populate_dgraph():
 
         objetos.append(ticket_obj)
 
-    # 3) Enviar todo a Dgraph en una sola mutacion JSON
+    # Enviar todo a Dgraph
     if objetos:
         txn = client.txn()
         try:
@@ -999,9 +992,21 @@ def populate_dgraph():
     print("Populate Dgraph: completado.")
 
 
-   
-    
+# ---------- MAIN GLOBAL ----------
 
+def main():
+    print("=== Populate: Mongo + Cassandra + Dgraph ===")
+
+    generar_csv_simple(archivo=CSV_PATH, filas=100)
+    populate_mongo()
+    populate_cassandra()
+    populate_dgraph()
+
+    print("=== Populate completado ===")
+
+
+if __name__ == "__main__":
+    main()
 
 def main():
     print("=== Populate: Mongo + Cassandra + Dgraph ===")

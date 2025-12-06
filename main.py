@@ -84,50 +84,65 @@ def test_connections():
                 pass
 
 #####Sub menu Dgraph con 4 requerimientos###
+from Dgraph.client import (
+    reporte_usuario_ticket,
+    deteccion_tickets_duplicados,
+    historial_usuario_instalacion,
+    historial_relacional_ticket,
+    tickets_relacionados_por_contexto,
+    usuario_mayor_diversidad,
+    deteccion_problemas_recurrentes,
+    ruta_atencion_ticket,
+    red_tickets_escalados,
+    conexion_usuarios_horarios,
+)
 
 
-def menu_dgraph():
-    """
-    Submenu para consultas de los requerimientos 1, 2,6 y 11
-    1) Relación usuario–ticket
-    2) Historial usuario–instalación
-    3) Tickets relacionados por contexto
-    4) Conexión entre usuarios y horarios de reporte
-    5) Historial relacional del ticket
-    """
+def menu_reportes_dgraph():
     while True:
         print("\n=== Reportes en Dgraph ===")
-        print("1. Relacion usuario-ticket")
-        print("2. Historial de interacciones usuario–instalacion")
-        print("3. Tickets relacionados por contexto")
-        print("4. Historial relacional del ticket")
-        print("5.  Conexión entre usuarios y horarios de reporte")
-        print("0. Volver al menu principal")
+        print("1.  Relación usuario–ticket")
+        print("2.  Detección de tickets duplicados")
+        print("3.  Historial de interacciones usuario–instalación")
+        print("4.  Historial relacional del ticket")
+        print("5.  Tickets relacionados por contexto (categoría)")
+        print("6.  Usuario con mayor diversidad de reportes")
+        print("7.  Detección de problemas recurrentes")
+        print("8.  Ruta de atención de un ticket")
+        print("9.  Red de tickets escalados")
+        print("10. Conexión entre usuarios y horarios de reporte")
+        print("0.  Volver al menú principal")
 
         try:
-            op = int(input("Opcion: ").strip())
+            op = int(input("Opción: ").strip())
         except ValueError:
-            print("Opcion invalida.")
+            print("Opción inválida.")
             continue
 
         if op == 0:
             break
         elif op == 1:
-           # Requerimiento 1: Relación usuario–ticket
-            dgraph_client.reporte_usuario_ticket()
+            reporte_usuario_ticket()
         elif op == 2:
-            # Requerimiento 3: Historial de interacciones usuario–instalación
-            dgraph_client.historial_usuario_instalacion()
+            deteccion_tickets_duplicados()
         elif op == 3:
-            # Requerimiento 6: Tickets relacionados por contexto (categoria / tipo)
-            dgraph_client.tickets_relacionados_por_contexto()
+            historial_usuario_instalacion()
         elif op == 4:
-            # Requerimiento 11: Conexion entre usuarios y horarios de reporte
-            dgraph_client.conexion_usuarios_horarios()
-        elif op==5:
-            dgraph_client.historial_relacional_ticket()
+            historial_relacional_ticket()
+        elif op == 5:
+            tickets_relacionados_por_contexto()
+        elif op == 6:
+            usuario_mayor_diversidad()
+        elif op == 7:
+            deteccion_problemas_recurrentes()
+        elif op == 8:
+            ruta_atencion_ticket()
+        elif op == 9:
+            red_tickets_escalados()
+        elif op == 10:
+            conexion_usuarios_horarios()
         else:
-            print("Opcion no valida.")
+            print("Opción no válida.")
 
 
 def borrar_datos():
@@ -458,7 +473,7 @@ def main():
         elif opcion == 8:
             borrar_datos()
         elif opcion == 9:
-            menu_dgraph()
+            menu_reportes_dgraph()
 
         else:
             print("\nOpcion no valida.\n")
