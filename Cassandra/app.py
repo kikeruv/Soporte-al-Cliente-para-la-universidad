@@ -21,6 +21,76 @@ KEYSPACE = os.getenv("CASSANDRA_KEYSPACE", "proyecto")
 REPLICATION_FACTOR = os.getenv("CASSANDRA_REPLICATION_FACTOR", "1")
 
 
+def _print_sugerencias_user_id(session, limite: int = 5) -> None:
+    """
+    Muestra algunos user_id que existen en Cassandra
+    para que el usuario no tenga que ir al CSV.
+    """
+    try:
+        rows = session.execute(
+            f"SELECT DISTINCT user_id FROM historial_por_usuario LIMIT {limite}"
+        )
+        ids = [r.user_id for r in rows if getattr(r, "user_id", None)]
+        if ids:
+            print("\nEjemplos de user_id con historial en Cassandra:")
+            print("  " + " | ".join(ids))
+    except Exception:
+        # Si algo falla, simplemente no mostramos sugerencias
+        pass
+
+
+def _print_sugerencias_profesor_id(session, limite: int = 5) -> None:
+    try:
+        rows = session.execute(
+            f"SELECT DISTINCT profesor_id FROM tickets_por_profesor LIMIT {limite}"
+        )
+        ids = [r.profesor_id for r in rows if getattr(r, "profesor_id", None)]
+        if ids:
+            print("\nEjemplos de profesor_id en Cassandra:")
+            print("  " + " | ".join(ids))
+    except Exception:
+        pass
+
+
+def _print_sugerencias_ticket_id(session, limite: int = 5) -> None:
+    try:
+        rows = session.execute(
+            f"SELECT DISTINCT ticket_id FROM historial_ticket LIMIT {limite}"
+        )
+        ids = [r.ticket_id for r in rows if getattr(r, "ticket_id", None)]
+        if ids:
+            print("\nEjemplos de ticket_id con historial en Cassandra:")
+            print("  " + " | ".join(ids))
+    except Exception:
+        pass
+
+
+def _print_sugerencias_install_id(session, limite: int = 5) -> None:
+    try:
+        rows = session.execute(
+            f"SELECT DISTINCT install_id FROM tickets_por_instalacion_fechas LIMIT {limite}"
+        )
+        ids = [r.install_id for r in rows if getattr(r, "install_id", None)]
+        if ids:
+            print("\nEjemplos de install_id en Cassandra:")
+            print("  " + " | ".join(ids))
+    except Exception:
+        pass
+
+
+def _print_sugerencias_instalacion(session, limite: int = 5) -> None:
+    try:
+        rows = session.execute(
+            f"SELECT DISTINCT instalacion FROM tickets_por_instalaciones LIMIT {limite}"
+        )
+        ids = [r.instalacion for r in rows if getattr(r, "instalacion", None)]
+        if ids:
+            print("\nEjemplos de instalacion en Cassandra:")
+            print("  " + " | ".join(ids))
+    except Exception:
+        pass
+
+
 def print_menu():
     opciones = {
         1: "Q1 - Alertas de tickets vencidos",
@@ -70,54 +140,49 @@ def main():
         elif opcion == 1:
             dias = int(input("Dias inactivos mayores a: ").strip() or "5")
             model.alertas_tickets_vencidos(session, dias)
-
         elif opcion == 2:
+            _print_sugerencias_user_id(session)
             user_id = input("user_id (ej. u-001): ").strip()
             model.historial_por_usuario(session, user_id)
-
         elif opcion == 3:
             fecha = input("Fecha (YYYY-MM-DD): ").strip()
             model.tickets_por_categoria_dia(session, fecha)
-
         elif opcion == 4:
+            _print_sugerencias_profesor_id(session)
             profesor_id = input("profesor_id (user_id del docente): ").strip()
             model.tickets_por_profesor(session, profesor_id)
-
         elif opcion == 5:
+            _print_sugerencias_ticket_id(session)
             ticket_id = input("ticket_id (ej. TK-2001): ").strip()
             model.historial_ticket(session, ticket_id)
-
         elif opcion == 6:
+            _print_sugerencias_install_id(session)
             install_id = input("install_id (ej. biblioteca): ").strip()
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
             model.tickets_por_instalacion_rango(session, install_id, f1, f2)
-
         elif opcion == 7:
             estado = input("Estado (abierto, en_proceso, cerrado): ").strip()
             model.tickets_por_estado(session, estado)
-
         elif opcion == 8:
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
             model.tickets_por_fecha_rango(session, f1, f2)
-
         elif opcion == 9:
+            _print_sugerencias_user_id(session)
             user_id = input("user_id: ").strip()
             fecha = input("Fecha (YYYY-MM-DD): ").strip()
             model.tickets_por_usuario_dia(session, user_id, fecha)
-
         elif opcion == 10:
+            print("\nEjemplos de rol: docente | estudiante")
             rol = input("Rol (docente/estudiante): ").strip()
             model.tickets_por_rol(session, rol)
-
         elif opcion == 11:
             model.conteo_por_prioridad(session)
-
         elif opcion == 12:
+            _print_sugerencias_instalacion(session)
             depto = input("install_id / instalacion (ej. DESI): ").strip()
             model.tickets_por_instalaciones(session, depto)
-
         elif opcion == 13:
             model.tickets_por_turno(session)
 

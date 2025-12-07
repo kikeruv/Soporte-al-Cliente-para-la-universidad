@@ -49,6 +49,71 @@ def get_cassandra_session_con_schema():
 
     return _cassandra_session
 
+
+def print_sugerencias_usuarios(limit: int = 5) -> None:
+    """
+    Muestra algunos user_id y emails desde Mongo
+    para que el usuario no tenga que revisar el CSV.
+    """
+    try:
+        usuarios = list(
+            db.users.find(
+                {},
+                {"_id": 0, "user_id": 1, "email": 1},
+            ).limit(limit)
+        )
+        if usuarios:
+            print("\nEjemplos de usuarios (user_id - email):")
+            print(
+                "  "
+                + " | ".join(
+                    f"{u.get('user_id')} - {u.get('email')}"
+                    for u in usuarios
+                    if u.get("user_id") and u.get("email")
+                )
+            )
+    except Exception:
+        # Si algo falla, simplemente no mostramos sugerencias
+        pass
+
+
+def print_sugerencias_instalaciones(limit: int = 5) -> None:
+    """
+    Muestra algunos installation_id desde los tickets de Mongo.
+    """
+    try:
+        pipeline = [
+            {"$group": {"_id": "$installation_id", "total": {"$sum": 1}}},
+            {"$sort": {"total": -1}},
+            {"$limit": limit},
+        ]
+        resultados = list(db.tickets.aggregate(pipeline))
+        ids = [r["_id"] for r in resultados if r.get("_id")]
+        if ids:
+            print("\nEjemplos de installation_id con tickets:")
+            print("  " + " | ".join(ids))
+    except Exception:
+        pass
+
+
+def print_sugerencias_ticket_ids(limit: int = 5) -> None:
+    """
+    Muestra algunos ticket_id desde Mongo.
+    """
+    try:
+        tickets = list(
+            db.tickets.find(
+                {},
+                {"_id": 0, "ticket_id": 1},
+            ).limit(limit)
+        )
+        ids = [t.get("ticket_id") for t in tickets if t.get("ticket_id")]
+        if ids:
+            print("\nEjemplos de ticket_id existentes:")
+            print("  " + " | ".join(ids))
+    except Exception:
+        pass
+
 ##### Esto esta hecho con Chat ya que solo es para verificar si estan conectadas las bases de datos 
 def test_connections():
     print("\nProbando conexiones a las 3 bases de datos")
@@ -229,11 +294,13 @@ def menu_instalaciones():
         elif op == 1:
             instalaciones_con_mas_incidencias()
         elif op == 2:
+            print_sugerencias_instalaciones()
             install_id = input("install_id (ej. biblioteca): ").strip()
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
             cass_model.tickets_por_instalacion_rango(session, install_id, f1, f2)
         elif op == 3:
+            print_sugerencias_instalaciones()
             install_id = input("install_id / instalacion (ej. biblioteca): ").strip()
             cass_model.tickets_por_instalaciones(session, install_id)
         elif op == 4:
@@ -306,24 +373,28 @@ def menu_tickets():
         elif op == 5:
             tickets_cerrados_por_categoria()
         elif op == 6:
+            # Distribucion categoria-estado (Mongo)
+            distribucion_categoria_estado()
+        elif op == 7:
             dias = int(input("Dias inactivos mayores a (ej. 5): ").strip() or "5")
             cass_model.alertas_tickets_vencidos(session, dias)
-        elif op == 7:
+        elif op == 8:
             fecha = input("Fecha (YYYY-MM-DD): ").strip()
             cass_model.tickets_por_categoria_dia(session, fecha)
-        elif op == 8:
+        elif op == 9:
+            print_sugerencias_ticket_ids()
             ticket_id = input("ticket_id (ej. TK-2001): ").strip()
             cass_model.historial_ticket(session, ticket_id)
-        elif op == 9:
+        elif op == 10:
             estado = input("Estado (abierto, en_proceso, cerrado): ").strip()
             cass_model.tickets_por_estado(session, estado)
-        elif op == 10:
+        elif op == 11:
             f1 = input("Fecha inicio (YYYY-MM-DD): ").strip()
             f2 = input("Fecha fin (YYYY-MM-DD): ").strip()
             cass_model.tickets_por_fecha_rango(session, f1, f2)
-        elif op == 11:
-            cass_model.conteo_por_prioridad(session)
         elif op == 12:
+            cass_model.conteo_por_prioridad(session)
+        elif op == 13:
             cass_model.tickets_por_turno(session)
         else:
             print("Opcion no valida.")
@@ -412,9 +483,11 @@ def menu_usuarios():
         elif op == 1:
             mostrar_usuarios()
         elif op == 2:
+            print_sugerencias_usuarios()
             user_id = input("user_id (ej. u-001): ").strip()
             cass_model.historial_por_usuario(session, user_id)
         elif op == 3:
+            print_sugerencias_usuarios()
             user_id = input("user_id: ").strip()
             fecha = input("Fecha (YYYY-MM-DD): ").strip()
             cass_model.tickets_por_usuario_dia(session, user_id, fecha)
